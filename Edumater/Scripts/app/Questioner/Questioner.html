@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="../Questioner/Questioner.js"></script>
+    <link href="../../../Content/bootstrap.css" rel="stylesheet" />
+    <title id="QuestionTitle">Question #N - #T</title>
+</head>
+<body>
+    <p width="100%" style="border-top:2px solid black; border-bottom:2px solid black; text-align:center;">INSERT TITLE HERE</p>
+    
+    <div class="row" id="Asker">
+        <div class="form-group col-12">
+            <p id="QuestionBox" class=""></p>
+        </div>
+        <div class="form-group row col-12">
+            <label for="Answer" class="col-md-12 col-lg-2 text-right">Answer:</label>
+            <div class="col-md-12 col-lg-10">
+                <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" id="Answer" />
+            </div>
+        </div>
+        <div class="form-group offset-2 col-10">
+            <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" />
+        </div>
+    </div>
+
+    <div id="Verdict" class="jumbotron bg-danger" style="display:none;">
+        <h1 id="VerdictText" class="text-success"></h1>
+        <small id="VerdictElaboration" class="text-dark"></small>
+        <div id="IncorrectAnswerBox">
+            <h3>CorrectAnswer:</h3>
+            <p id="CorrectAnswerText"></p>
+            <input type="submit" value="Dismiss" class="text-danger btn btn-large" id="DismissVerdict"/>
+        </div>
+
+    </div>
+</body>
+</html>
