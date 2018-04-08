@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="../../Scripts/jquery-3.0.0.js"></script>
+    <script src="../../Scripts/underscore.js"></script>
+    <script src="../../Scripts/bootstrap.js"></script>
+    <script src="../Questioner/Questioner.js"></script>
+    <link href="../../../Content/bootstrap.css" rel="stylesheet" />
+    <link href="../../Content/Site.css" rel="stylesheet" />
+    <title id="QuestionTitle">Question #N - #T</title>
+</head>
+<body>
+    <!-- Open file Modal (not normally visible) -->
+    <div class="modal" tabindex="-1" role="dialog" id="OpenQuestionFileModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Open Questions File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-10">
+                        <label for="QuestionFile" class="control-label">File:</label>
+                        <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" />
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="submit" value="Open" class="btn btn-large btn-primary" id="OpenQuestionSubmit" />
+                    </div>
+                    <div class="col-12">
+                        <p id="OpenQuestionError" class="text-danger"></p>
+                    </div>
+                    <div class="col-12">
+                        <div class="card hidden" id="OpenQuestionFileInfo">
+                            <div class="card-header">
+                                <h3>
+                                    <span id="OpenQuestionFileName"></span>
+                                    <span id="OpenQuestionFileQCount" class="badge badge-dark"></span>
+                                </h3>
+                                <small>Created:  <span id="OpenQuestionFileCreated"></span></small>
+                            </div>
+                            <div class="card-body">
+                                <p id="OpenQuestionFileNotes"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary disabled" id="OpenQuestionAccept">Accept</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="OpenQuestionClose">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display:none;" class="bg-danger row jumbotron" id="ErrorBar">
+        <h4 id="ErrorText" class="col-11"></h4>
+        <button id="ErrorDismiss" aria-label="Dismiss" class="close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="container" id="QuestionContainer">
+        <p width="100%" style="border-top:2px solid black; border-bottom:2px solid black; text-align:center;">INSERT TITLE HERE</p>
+
+        <div class="row" id="Question">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>QUESTION:</h2>
+                    </div>
+                    <p id="QuestionText" class="card-body"></p>
+                </div>
+            </div>
+            <div class="col-12">
+                <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" id="Answer" />
+            </div>
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" />
+            </div>
+        </div>
+
+        <div id="Verdict" class="jumbotron bg-danger" style="display:none;">
+            <h1 id="VerdictText" class=""></h1>
+            <small id="VerdictElaboration" class="text-dark"></small>
+            <div id="IncorrectAnswerBox">
+                <h3>Correct Answer:</h3>
+                <p id="CorrectAnswerText"></p>
+                <input type="submit" value="Dismiss" class="text-danger btn btn-large" id="DismissVerdict" />
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

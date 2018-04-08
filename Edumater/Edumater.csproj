@@ -37,7 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
-    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
@@ -93,13 +93,14 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Content\Site.css" />
     <Content Include="package.json" />
     <None Include="packages.config" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\app\Index\Index.html" />
-    <Content Include="Scripts\app\Questioner\Questioner.html" />
+    <Content Include="app\Index\Index.html" />
+    <Content Include="app\Questioner\Questioner.html" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -158,9 +159,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\app\Common\Question.ts" />
-    <TypeScriptCompile Include="Scripts\app\Index\Index.ts" />
-    <TypeScriptCompile Include="Scripts\app\Questioner\Questioner.ts" />
+    <TypeScriptCompile Include="app\Common\Question.ts" />
+    <TypeScriptCompile Include="app\Index\Index.ts" />
+    <TypeScriptCompile Include="app\Questioner\Questioner.ts" />
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
