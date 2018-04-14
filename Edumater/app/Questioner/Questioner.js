@@ -1,3 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var class_transformer_1 = require("class-transformer");
+var _ = require("underscore");
 // yes, yes, I'm probably angering some ancient TypeScript beast putting this here, but it's so dang useful..
 function RandomElement(array) {
     return array[_.random(array.length - 1)];
@@ -68,15 +72,14 @@ var QuestionManager = /** @class */ (function () {
             console.error("Questions Data of 0 length");
             return false;
         }
-        if (questions.every(function (q) {
-            return !isNaN(q.AnsweredCorrectly) && q.AnsweredCorrectly > 0 &&
-                !isNaN(q.AnsweredCorrectly) && q.AnsweredIncorrectly > 0 &&
-                q.Created !== undefined &&
-                q.IsCaseSensitive !== undefined &&
-                q.PrimaryAnswer !== undefined && q.PrimaryAnswer !== null && q.PrimaryAnswer !== "" &&
-                !isNaN(q.Priority) &&
-                q.QuestionText !== undefined && q.QuestionText !== null && q.QuestionText !== "";
-        })) {
+        if (questions.every(function (q) { return q &&
+            !isNaN(q.AnsweredCorrectly) && q.AnsweredCorrectly > 0 &&
+            !isNaN(q.AnsweredCorrectly) && q.AnsweredIncorrectly > 0 &&
+            q.Created !== undefined &&
+            q.IsCaseSensitive !== undefined &&
+            q.PrimaryAnswer !== undefined && q.PrimaryAnswer !== null && q.PrimaryAnswer !== "" &&
+            !isNaN(q.Priority) &&
+            q.QuestionText !== undefined && q.QuestionText !== null && q.QuestionText !== ""; })) {
             console.error("A Question in the loaded dataset was missing required information. \n" +
                 "Required Information Includes: AnsweredCorrectly, AnsweredIncorrectly, Created, IsCaseSensitive, PrimaryAnswer, Priority, and QuestionText");
             return false;
@@ -96,7 +99,9 @@ var QuestionManager = /** @class */ (function () {
                         callback(null, "Questions failed to verify!");
                         return;
                     }
-                    _this.Questions = questions;
+                    _this.Questions = questions.map(function (q) {
+                        return class_transformer_1.plainToClass(Question, q);
+                    });
                     callback(RandomElement(questions), null);
                 }
             });
@@ -123,14 +128,18 @@ var QuestionManager = /** @class */ (function () {
                 callback(err);
             }
             else {
+                _this.CurrentQuestion = question;
                 _this.OnSetNewQuestion == null ? console.warn("No Action has been set for QuestionManager.OnSetNewQuestion") : _this.OnSetNewQuestion(_this.CurrentQuestion);
                 callback(null);
             }
         });
     };
-    QuestionManager.prototype.VerifyAnswer = function (Answer) {
+    QuestionManager.prototype.VerifyAnswer = function (Answer, callback) {
+        if (!this.CurrentQuestion) {
+            callback(null, null, "No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
+        }
         var correct;
-        if (this.CurrentQuestion.IsCaseSensitive) {
+        if (!!this.CurrentQuestion.IsCaseSensitive) {
             correct =
                 Answer === this.CurrentQuestion.PrimaryAnswer
                     || this.CurrentQuestion.AcceptableAnswers === undefined ? false :
@@ -148,7 +157,7 @@ var QuestionManager = /** @class */ (function () {
         else {
             this.CurrentQuestion.AnsweredIncorrectly++;
         }
-        this.OnQuestionAnswered == null ? console.warn("No Action set for QuestionManager.OnQuestionAnswered") : this.OnQuestionAnswered(this.CurrentQuestion, correct);
+        callback(this.CurrentQuestion, correct, null);
     };
     return QuestionManager;
 }());
@@ -173,7 +182,7 @@ var QuestionsByFileSource = /** @class */ (function () {
                         return;
                     }
                     try {
-                        if (data.SaveName === null || data.Questions === null || data.Questions.length === 0) {
+                        if (data.SaveName === null || !data.Questions || data.Questions.length === 0) {
                             $("#OpenQuestionError").text("Question File was unnamed or contained no questions (odds are it is a corrupted file)");
                         }
                         else {
@@ -191,6 +200,7 @@ var QuestionsByFileSource = /** @class */ (function () {
                                     callback(data.Questions, null);
                                 });
                             }
+                            $("#OpenQuestionError").text("");
                         }
                     }
                     catch (e) {
@@ -200,7 +210,7 @@ var QuestionsByFileSource = /** @class */ (function () {
                 fr_1.readAsText($("#OpenQuestionFile").prop("files")[0]);
             }
             else {
-                $("#OpenQuestionError").text("No File selected (or perhaps your browser isn't supported");
+                $("#OpenQuestionError").text("No File selected (or perhaps your browser isn't supported)");
             }
         });
         return null;
@@ -213,18 +223,6 @@ var vm = new VerdictManager();
 qm.OnSetNewQuestion = function (newQuestion) {
     $("#QuestionText").text(newQuestion.QuestionText);
     $("#Answer").focus().val(""); //reset answer box and set focus on it (make it so that you can start typing right away)
-};
-qm.OnQuestionAnswered = function (question, WasCorrect) {
-    var v = $("#Verdict");
-    if (WasCorrect) {
-        v.addClass("bg-success");
-        v.removeClass("bg-danger");
-    }
-    else {
-        v.addClass("bg-danger");
-        v.removeClass("bg-success");
-    }
-    vm.MakeVerdict(question.PrimaryAnswer, WasCorrect);
 };
 vm.OnVerdictChange = function (verdict) {
     var changeText = function (err) {
@@ -252,24 +250,37 @@ vm.OnVerdictChange = function (verdict) {
 };
 $(document).ready(function () {
     function OnQuestionLoadError(err) {
-        $("#QuestionContainer").addClass("disablebuttons");
-        $("#ErrorBar").show();
+        $("#ErrorPlaceholder").html('<div class="alert alert-danger alert-dismissible fade show" role="alert" id="ErrorAlert"><h5 id = "ErrorText" class= "col-11"> </h5><button id = "ErrorDismiss" type = "button" class= "close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         $("#ErrorText").text(err);
-        $("#ErrorDismiss").on("click", function () {
-            $("#ErrorBar").hide();
-            $("#QuestionContainer").removeClass("disablebuttons");
-        });
     }
     $("#DismissVerdict").on("click", function () {
         $("#SubmitarizeIt").show();
         $("#Verdict").hide();
         qm.AskNewQuestion(function (err) {
-            console.error("Error Thrown when asking next question (not first) Error Text:  " + err);
-            OnQuestionLoadError(err);
+            if (err) {
+                console.error("Error Thrown when asking next question (not first) Error Text:  " + err);
+                OnQuestionLoadError(err);
+            }
         });
     });
     $("#SubmitarizeIt").on("click", function () {
-        qm.VerifyAnswer($("#Answer").val().toString());
+        qm.VerifyAnswer($("#Answer").val().toString() || "", function (question, correct, err) {
+            if (err) {
+                OnQuestionLoadError(err);
+            }
+            else {
+                var v = $("#Verdict");
+                if (correct) {
+                    v.addClass("bg-success");
+                    v.removeClass("bg-danger");
+                }
+                else {
+                    v.addClass("bg-danger");
+                    v.removeClass("bg-success");
+                }
+                vm.MakeVerdict(question.PrimaryAnswer, correct);
+            }
+        });
     });
     $("#Answer").on("keyup", function (event) {
         if (event.keyCode == 13 && $("#SubmitarizeIt").css("display") != "none") {
@@ -277,8 +288,10 @@ $(document).ready(function () {
         }
     });
     qm.AskNewQuestion(function (err) {
-        console.error("Error Thrown when asking first (kickoff) question.  Error Text:  " + err);
-        OnQuestionLoadError(err);
+        if (err) {
+            console.error("Error Thrown when asking first (kickoff) question.  Error Text:  " + err);
+            OnQuestionLoadError(err);
+        }
     }); // Everything's set up, kick off with the first question
 });
 //# sourceMappingURL=Questioner.js.map

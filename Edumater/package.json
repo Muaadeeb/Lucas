@@ -4,6 +4,8 @@
   "devDependencies": {
     "@types/bootstrap": "^4.0.1",
     "@types/jquery": "^3.3.1",
-    "@types/underscore": "^1.8.8"
+    "@types/underscore": "^1.8.8",
+    "class-transformer": "^0.1.9",
+    "reflect-metadata": "^0.1.12"
   }
 }

@@ -1,4 +1,7 @@
-﻿// yes, yes, I'm probably angering some ancient TypeScript beast putting this here, but it's so dang useful..
+﻿import { plainToClass } from "class-transformer"
+import * as _ from "underscore";
+
+// yes, yes, I'm probably angering some ancient TypeScript beast putting this here, but it's so dang useful..
 function RandomElement(array: any[]) {
     return array[_.random(array.length - 1)];
 
@@ -89,16 +92,16 @@ class QuestionManager {
             return false;
         }
 
-        if (questions.every((q) => {
-            return !isNaN(q.AnsweredCorrectly) && q.AnsweredCorrectly > 0 &&
-                !isNaN(q.AnsweredCorrectly) && q.AnsweredIncorrectly > 0 &&
-                q.Created !== undefined &&
-                q.IsCaseSensitive !== undefined &&
-                q.PrimaryAnswer !== undefined && q.PrimaryAnswer !== null && q.PrimaryAnswer !== "" &&
-                !isNaN(q.Priority) &&
-                q.QuestionText !== undefined && q.QuestionText !== null && q.QuestionText !== ""
+        if (questions.every((q) => q &&
+            !isNaN(q.AnsweredCorrectly) && q.AnsweredCorrectly > 0 &&
+            !isNaN(q.AnsweredCorrectly) && q.AnsweredIncorrectly > 0 &&
+            q.Created !== undefined &&
+            q.IsCaseSensitive !== undefined &&
+            q.PrimaryAnswer !== undefined && q.PrimaryAnswer !== null && q.PrimaryAnswer !== "" &&
+            !isNaN(q.Priority) &&
+            q.QuestionText !== undefined && q.QuestionText !== null && q.QuestionText !== ""
 
-        })) {
+        )) {
             console.error("A Question in the loaded dataset was missing required information. \n" +
                 "Required Information Includes: AnsweredCorrectly, AnsweredIncorrectly, Created, IsCaseSensitive, PrimaryAnswer, Priority, and QuestionText")
             return false;
@@ -121,12 +124,14 @@ class QuestionManager {
                         callback(null, "Questions failed to verify!");
                         return;
                     }
-                    this.Questions = questions;
+                    this.Questions = questions.map((q) => {
+                        return plainToClass(Question, q);
+                    });
                     callback(RandomElement(questions), null);
                 }
             });
         } else {
-            callback(RandomElement(this.Questions),null);
+            callback(RandomElement(this.Questions), null);
         }
         //let q = new Question();
         //q.QuestionText = "How awesome is Lucas?";
@@ -145,19 +150,19 @@ class QuestionManager {
             if (err) {
                 callback(err);
             } else {
+                this.CurrentQuestion = question;
                 this.OnSetNewQuestion == null ? console.warn("No Action has been set for QuestionManager.OnSetNewQuestion") : this.OnSetNewQuestion(this.CurrentQuestion);
                 callback(null);
             }
         });
 
     }
-    public VerifyAnswer(Answer: string) {
+    public VerifyAnswer(Answer: string, callback: (question: Question, correct: boolean, err: string) => void): void {
         if (!this.CurrentQuestion) {
-            console.error("No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.  Asking new question...");
-            this.AskNewQuestion();
+            callback(null, null, "No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
         }
         var correct: boolean;
-        if (this.CurrentQuestion.IsCaseSensitive) {
+        if (!!this.CurrentQuestion.IsCaseSensitive) { //bang bang you're boolean
             correct =
                 Answer === this.CurrentQuestion.PrimaryAnswer
                     || this.CurrentQuestion.AcceptableAnswers === undefined ? false :
@@ -166,14 +171,13 @@ class QuestionManager {
             correct =
                 Answer.toLowerCase() === this.CurrentQuestion.PrimaryAnswer.toLowerCase()
                     || this.CurrentQuestion.AcceptableAnswers === undefined ? false :
-                        _.contains(
-                            this.CurrentQuestion.AcceptableAnswers.map(
-                                function (value) { return value.toLowerCase() }),
-                            Answer.toLowerCase());
+                    _.contains(
+                        this.CurrentQuestion.AcceptableAnswers.map(
+                            function (value) { return value.toLowerCase() }),
+                        Answer.toLowerCase());
         }
         if (correct) { this.CurrentQuestion.AnsweredCorrectly++; } else { this.CurrentQuestion.AnsweredIncorrectly++; }
-        this.OnQuestionAnswered == null ? console.warn("No Action set for QuestionManager.OnQuestionAnswered") : this.OnQuestionAnswered(this.CurrentQuestion, correct);
-
+        callback(this.CurrentQuestion, correct, null);
     }
 }
 
@@ -201,7 +205,7 @@ class QuestionsByFileSource implements IQuestionSource {
                         return;
                     }
                     try {
-                        if (data.SaveName === null || data.Questions === null || data.Questions.length === 0) {
+                        if (data.SaveName === null || !data.Questions || data.Questions.length === 0) {
                             $("#OpenQuestionError").text("Question File was unnamed or contained no questions (odds are it is a corrupted file)");
                         } else {
                             $("#OpenQuestionFileQCount").text(data.Questions.length + " Qs");
@@ -219,6 +223,7 @@ class QuestionsByFileSource implements IQuestionSource {
                                         callback(data.Questions, null);
                                     })
                             }
+                            $("#OpenQuestionError").text("");
                         }
                     } catch (e) {
                         $("#OpenQuestionError").text("It appears your data's missing some pieces.");
@@ -227,7 +232,7 @@ class QuestionsByFileSource implements IQuestionSource {
                 }
                 fr.readAsText($("#OpenQuestionFile").prop("files")[0]);
             } else {
-                $("#OpenQuestionError").text("No File selected (or perhaps your browser isn't supported");
+                $("#OpenQuestionError").text("No File selected (or perhaps your browser isn't supported)");
             }
         })
         return null;
@@ -241,18 +246,6 @@ let vm = new VerdictManager();
 qm.OnSetNewQuestion = function (newQuestion: Question) {
     $("#QuestionText").text(newQuestion.QuestionText);
     $("#Answer").focus().val(""); //reset answer box and set focus on it (make it so that you can start typing right away)
-}
-
-qm.OnQuestionAnswered = function (question: Question, WasCorrect: boolean) {
-    let v = $("#Verdict");
-    if (WasCorrect) {
-        v.addClass("bg-success");
-        v.removeClass("bg-danger");
-    } else {
-        v.addClass("bg-danger");
-        v.removeClass("bg-success");
-    }
-    vm.MakeVerdict(question.PrimaryAnswer, WasCorrect);
 }
 
 vm.OnVerdictChange = function (verdict: Verdict) {
@@ -279,17 +272,36 @@ vm.OnVerdictChange = function (verdict: Verdict) {
 }
 
 $(document).ready(function () {
-    
+    function OnQuestionLoadError(err: string) {
+        $("#ErrorPlaceholder").html('<div class="alert alert-danger alert-dismissible fade show" role="alert" id="ErrorAlert"><h5 id = "ErrorText" class= "col-11"> </h5><button id = "ErrorDismiss" type = "button" class= "close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+        $("#ErrorText").text(err);
+    }
     $("#DismissVerdict").on("click", function () {
         $("#SubmitarizeIt").show();
         $("#Verdict").hide();
         qm.AskNewQuestion((err) => {
-            console.error("Error Thrown when asking next question (not first) Error Text:  " + err);
-            OnQuestionLoadError(err);
+            if (err) {
+                console.error("Error Thrown when asking next question (not first) Error Text:  " + err);
+                OnQuestionLoadError(err);
+            }
         });
     });
     $("#SubmitarizeIt").on("click", function () {
-        qm.VerifyAnswer($("#Answer").val().toString());
+        qm.VerifyAnswer($("#Answer").val().toString() || "", (question, correct, err) => {
+            if (err) {
+                OnQuestionLoadError(err);
+            } else {
+                let v = $("#Verdict");
+                if (correct) {
+                    v.addClass("bg-success");
+                    v.removeClass("bg-danger");
+                } else {
+                    v.addClass("bg-danger");
+                    v.removeClass("bg-success");
+                }
+                vm.MakeVerdict(question.PrimaryAnswer, correct);
+            }
+        });
     })
     $("#Answer").on("keyup", function (event) {
         if (event.keyCode == 13 && $("#SubmitarizeIt").css("display") != "none") {
@@ -297,7 +309,9 @@ $(document).ready(function () {
         }
     });
     qm.AskNewQuestion((err) => {
-        console.error("Error Thrown when asking first (kickoff) question.  Error Text:  " + err);
-        OnQuestionLoadError(err);
+        if (err) {
+            console.error("Error Thrown when asking first (kickoff) question.  Error Text:  " + err);
+            OnQuestionLoadError(err);
+        }
     }); // Everything's set up, kick off with the first question
 });
