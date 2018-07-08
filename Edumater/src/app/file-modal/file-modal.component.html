@@ -1,0 +1,32 @@
+<!-- Open file Modal (not normally visible) -->
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Open Questions File</h5>
+        <button type="button" class="close" aria-label="Close" (click)="questionsClosed()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-10">
+            <label for="QuestionFile" class="control-label">File:</label>
+            <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" />
+          </div>
+          <div class="col-lg-2">
+            <input type="submit" value="Open" class="btn btn-large btn-primary" (click)="submit()" />
+          </div>
+          <div class="col-12">
+            <p id="OpenQuestionError" class="text-danger">{{error}}</p>
+          </div>
+          <app-question-file-display [data]="data" style="width:100%" *ngIf="data"></app-question-file-display>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" [class.disabled]="valid" (click)="questionsAccepted()">Accept</button>
+          <button type="button" class="btn btn-secondary" (click)="questionsClosed()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

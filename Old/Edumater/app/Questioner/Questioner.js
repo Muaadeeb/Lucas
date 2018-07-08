@@ -139,7 +139,7 @@ var QuestionManager = /** @class */ (function () {
             callback(null, null, "No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
         }
         var correct;
-        if (!!this.CurrentQuestion.IsCaseSensitive) {
+        if (!!this.CurrentQuestion.IsCaseSensitive) { //bang bang you're boolean
             correct =
                 Answer === this.CurrentQuestion.PrimaryAnswer
                     || this.CurrentQuestion.AcceptableAnswers === undefined ? false :

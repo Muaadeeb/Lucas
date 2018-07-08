@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\file-modal",
+    "\\src\\app\\headbar",
+    "\\src\\app\\landing",
+    "\\src\\app\\question-display",
+    "\\src\\app\\questioner"
+  ],
+  "SelectedNode": "\\src\\app\\app.component.html",
+  "PreviewInSolutionExplorer": false
+}

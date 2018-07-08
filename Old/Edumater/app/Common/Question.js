@@ -7,5 +7,5 @@
 //    public AnsweredIncorrectly: number;
 //    public Priority: number;
 //}
-//export default Question 
+//export default Question
 //# sourceMappingURL=Question.js.map

@@ -1,0 +1,21 @@
+<app-file-modal #questionFileModal></app-file-modal>
+<div class="row" id="Question">
+  <app-question-display style="width:100%;"></app-question-display>
+  <div class="col-12">
+    <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" id="Answer" />
+  </div>
+  <div class="col-md-offset-2 col-md-10">
+    <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" />
+  </div>
+</div>
+
+<div id="Verdict" class="jumbotron bg-danger" style="display:none;">
+  <h1 id="VerdictText" class=""></h1>
+  <small id="VerdictElaboration" class="text-dark"></small>
+  <div id="IncorrectAnswerBox">
+    <h3>Correct Answer:</h3>
+    <p id="CorrectAnswerText"></p>
+    <input type="submit" value="Dismiss" class="text-danger btn btn-large" id="DismissVerdict" />
+  </div>
+
+</div>
