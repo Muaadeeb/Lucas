@@ -1,5 +1,5 @@
 <app-file-modal #questionFileModal></app-file-modal>
-<div class="row" id="Question">
+<div class="row" id="Question" *ngIf="">
   <app-question-display style="width:100%;"></app-question-display>
   <div class="col-12">
     <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" id="Answer" />
@@ -8,6 +8,7 @@
     <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" />
   </div>
 </div>
+<button class="btn btn-success" (click)="this.questionFileModal.RetrieveQuestions()">Open Questions</button>
 
 <div id="Verdict" class="jumbotron bg-danger" style="display:none;">
   <h1 id="VerdictText" class=""></h1>

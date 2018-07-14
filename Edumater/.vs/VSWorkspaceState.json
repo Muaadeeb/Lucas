@@ -3,13 +3,13 @@
     "",
     "\\src",
     "\\src\\app",
+    "\\src\\app\\Common",
     "\\src\\app\\file-modal",
     "\\src\\app\\headbar",
     "\\src\\app\\landing",
     "\\src\\app\\question-display",
-    "\\src\\app\\question-file-display",
     "\\src\\app\\questioner"
   ],
-  "SelectedNode": "\\src\\app\\file-modal\\file-modal.component.ts",
+  "SelectedNode": "\\src\\app\\verdict.service.ts",
   "PreviewInSolutionExplorer": false
 }

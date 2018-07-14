@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FileModalComponent } from '../file-modal/file-modal.component';
+import { QuestionManager } from '../common/QuestionManager';
 
 @Component({
   selector: 'app-questioner',
@@ -8,10 +9,11 @@ import { FileModalComponent } from '../file-modal/file-modal.component';
 })
 export class QuestionerComponent implements OnInit {
   @ViewChild("questionFileModal") questionFileModal: FileModalComponent;
+  qm: QuestionManager;
   constructor() { }
 
   ngOnInit() {
-    this.questionFileModal.RetrieveQuestions();
+    this.qm = new QuestionManager(this.questionFileModal);
   }
 
 }

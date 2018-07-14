@@ -1,5 +1,5 @@
 <ng-template #content let-c="close" let-d="dismiss">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="margin:0">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Open Questions File</h5>
@@ -11,31 +11,31 @@
         <div class="row">
           <div class="col-lg-10">
             <label for="QuestionFile" class="control-label">File:</label>
-            <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" />
+            <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" (change)="submit()"/>
           </div>
-          <div class="col-lg-2">
+          <!--<div class="col-lg-2">
             <input type="submit" value="Open" class="btn btn-large btn-primary" (click)="submit()" />
-          </div>
+          </div>-->
           <div class="col-12">
             <p id="OpenQuestionError" class="text-danger">{{error}}</p>
           </div>
-          <div class="col-12" *ngIf="data">
-    <div class="card hidden" id="OpenQuestionFileInfo">
-      <div class="card-header">
-        <h3>
-          <span>{{data.SaveName}}</span>
-          <span class="badge badge-dark">{{data.Questions.length}} Q's</span>
-        </h3>
-        <small>Created:  <span>{{data | date:"medium"}}</span></small>
-      </div>
-      <div class="card-body">
-        <p>{{data.Notes}}</p>
-      </div>
-    </div>
-  </div>
+          <div class="col-12" *ngIf="data.Questions">
+            <div class="card hidden" id="OpenQuestionFileInfo">
+              <div class="card-header">
+                <h3>
+                  <span>{{data.SaveName}}</span>
+                  <span class="badge badge-dark float-right">{{data.Questions.length}} Q's</span>
+                </h3>
+                <small>Created:  <span>{{data.CreateDate | date:"medium"}}</span></small>
+              </div>
+              <div class="card-body">
+                <p>{{data.Notes}}</p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" [class.disabled]="valid" (click)="questionsAccepted()">Accept</button>
+          <button type="button" class="btn btn-primary" [class.disabled]="!valid" (click)="questionsAccepted()">Accept</button>
           <button type="button" class="btn btn-secondary" (click)="questionsClosed()">Close</button>
         </div>
       </div>

@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, throwError, of } from 'rxjs';
+import { Observable, Subject, throwError, of, Subscriber, TeardownLogic } from 'rxjs';
 import { map } from "rxjs/operators";
 import * as _ from "underscore";
 import { Utils } from './utils';
 import { Question } from './Question';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class QuestionService {
+export class QuestionManager {
   private Questions: Question[];
   private CurrentQuestion: Question;
   private questionSource: IQuestionSource;
@@ -47,8 +44,8 @@ export class QuestionService {
     return true;
   }
 
-  public OnQuestionAnswered: (question: Question, WasCorrect: boolean) => void;
-  public OnSetNewQuestion: (question: Question) => void;
+  //public OnQuestionVerified: (question: Question, WasCorrect: boolean) => void;
+  public OnUpdateQuestion: (question: Question) => void;
 
 
   private GetNextQuestion(): Observable<Question> {
@@ -72,10 +69,10 @@ export class QuestionService {
   public AskNewQuestion():Observable<any> {
     return this.GetNextQuestion().pipe(map((question) => {
       this.CurrentQuestion = question;
-      if (this.OnSetNewQuestion == null) {
+      if (this.OnUpdateQuestion == null) {
         return throwError("No Action has been set for QuestionManager.OnSetNewQuestion")
       } else {
-        this.OnSetNewQuestion(this.CurrentQuestion);
+        this.OnUpdateQuestion(this.CurrentQuestion);
       }
     }));
   }

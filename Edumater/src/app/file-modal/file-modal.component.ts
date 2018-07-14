@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { IQuestionSource } from '../question.service';
 import { Observable, throwError, Subject, of } from 'rxjs';
 import { SavedQuestionsData } from '../SavedQuestionsData';
@@ -8,7 +8,8 @@ import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-file-modal',
   templateUrl: './file-modal.component.html',
-  styleUrls: ['./file-modal.component.css']
+  styleUrls: ['./file-modal.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class FileModalComponent implements OnInit, IQuestionSource {
   output$: Subject<Question[]>;
@@ -19,7 +20,6 @@ export class FileModalComponent implements OnInit, IQuestionSource {
   activeModal: NgbModalRef;
   constructor(private modalService: NgbModal) {
     this.data = new SavedQuestionsData();
-
   }
 
   ngOnInit() {
@@ -67,7 +67,7 @@ export class FileModalComponent implements OnInit, IQuestionSource {
 
   public RetrieveQuestions(): Observable<Question[]> {
     this.output$ = new Subject<Question[]>();
-    //this.activeModal = this.modalService.open(this.content);
+    this.activeModal = this.modalService.open(this.content);
     return this.output$;
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Utils } from "./utils";
-import { Verdict } from './Verdict';
+import { Utils } from "./common/utils";
+import { Verdict } from './common/Verdict';
 
 @Injectable({
   providedIn: 'root'
