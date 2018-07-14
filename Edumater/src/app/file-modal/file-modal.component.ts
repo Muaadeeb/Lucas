@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { IQuestionSource } from '../question.service';
-import { Observable, throwError, Subject } from 'rxjs';
+import { Observable, throwError, Subject, of } from 'rxjs';
 import { SavedQuestionsData } from '../SavedQuestionsData';
 import { Question } from '../Question';
 import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,11 +15,14 @@ export class FileModalComponent implements OnInit, IQuestionSource {
   data: SavedQuestionsData;
   error: string;
   valid: boolean = false;
-  @ViewChild("content") content: NgbModalRef;
-  constructor(private modalService:NgbModal) { }
+  @ViewChild("content") content: TemplateRef<Object>;
+  activeModal: NgbModalRef;
+  constructor(private modalService: NgbModal) {
+    this.data = new SavedQuestionsData();
+
+  }
 
   ngOnInit() {
-    this.data = null;
   }
   submit() {
     let file = (<HTMLInputElement>document.getElementById("OpenQuestionFile")).files[0];
@@ -39,7 +42,7 @@ export class FileModalComponent implements OnInit, IQuestionSource {
             this.valid = true;
             this.error = "";
           }
-        }catch (e) {
+        } catch (e) {
           this.error = "It appears your data's missing some pieces.";
         }
 
@@ -51,19 +54,22 @@ export class FileModalComponent implements OnInit, IQuestionSource {
   }
   questionsAccepted() {
     if (this.valid) {
-      this.content.close();
+      this.activeModal.close();
+      this.activeModal = null;
       this.output$.next(this.data.Questions);
     }
   }
   questionsClosed() {
-    this.content.dismiss();
+    this.activeModal.dismiss();
+    this.activeModal = null;
     this.output$.error(throwError("Question Modal was closed before questions could be loaded."))
   }
 
   public RetrieveQuestions(): Observable<Question[]> {
     this.output$ = new Subject<Question[]>();
-    this.modalService.open(this.content);
+    //this.activeModal = this.modalService.open(this.content);
     return this.output$;
   }
+
 }
 

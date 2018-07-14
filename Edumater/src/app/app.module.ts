@@ -9,7 +9,6 @@ import { QuestionDisplayComponent } from './question-display/question-display.co
 import { QuestionerComponent } from './questioner/questioner.component';
 import { LandingComponent } from './landing/landing.component';
 import { FileModalComponent } from './file-modal/file-modal.component';
-import { QuestionFileDisplayComponent } from './question-file-display/question-file-display.component';
 
 @NgModule({
   imports: [
@@ -24,7 +23,6 @@ import { QuestionFileDisplayComponent } from './question-file-display/question-f
     QuestionerComponent,
     LandingComponent,
     FileModalComponent,
-    QuestionFileDisplayComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
