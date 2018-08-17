@@ -1,104 +1,69 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, throwError, of, Subscriber, TeardownLogic } from 'rxjs';
-import { map } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import * as _ from "underscore";
 import { Utils } from './utils';
 import { Question } from './Question';
+import { SavedQuestionsData, VerifyQuestions } from './SavedQuestionsData';
 
 export class QuestionManager {
   private Questions: Question[];
-  private CurrentQuestion: Question;
+  public CurrentQuestion: Question;
   private questionSource: IQuestionSource;
   public constructor(qs: IQuestionSource) {
     this.questionSource = qs;
   }
-  public GetCurrentQuestion(): Question {
-    return this.CurrentQuestion;
-  }
-  VerifyQuestions(questions: Question[]): boolean {
-    if (questions === undefined || questions === null) {
-      console.error("Questions Data null or undefined");
-      return false;
-    }
-
-    if (questions.length === 0) {
-      console.error("Questions Data of 0 length");
-      return false;
-    }
-
-    if (questions.every((q) => q &&
-      !isNaN(q.AnsweredCorrectly) && q.AnsweredCorrectly > 0 &&
-      !isNaN(q.AnsweredCorrectly) && q.AnsweredIncorrectly > 0 &&
-      q.Created !== undefined &&
-      q.IsCaseSensitive !== undefined &&
-      q.PrimaryAnswer !== undefined && q.PrimaryAnswer !== null && q.PrimaryAnswer !== "" &&
-      !isNaN(q.Priority) &&
-      q.QuestionText !== undefined && q.QuestionText !== null && q.QuestionText !== ""
-
-    )) {
-      console.error("A Question in the loaded dataset was missing required information. \n" +
-        "Required Information Includes: AnsweredCorrectly, AnsweredIncorrectly, Created, IsCaseSensitive, PrimaryAnswer, Priority, and QuestionText")
-      return false;
-    }
-
-    return true;
-  }
 
   //public OnQuestionVerified: (question: Question, WasCorrect: boolean) => void;
-  public OnUpdateQuestion: (question: Question) => void;
+  public OnUpdateQuestion: (question: Question) => void = () => { };
 
 
   private GetNextQuestion(): Observable<Question> {
-    let toReturn: Subject<Question>;
+    let toReturn: Subject<Question> = new Subject<Question>();
     if (this.Questions === undefined || this.Questions === null || this.Questions.length === 0) {
-      this.questionSource.RetrieveQuestions().subscribe((questions) => {
-        if (!this.VerifyQuestions(questions)) {
-          console.error("Questions failed to verify!");
+      this.questionSource.RetrieveQuestions().subscribe((savedQData) => {
+        if (!VerifyQuestions(savedQData.Questions)) {
           toReturn.error("Questions failed to verify!");
           return;
         }
-        this.Questions = questions;
-        toReturn.next(Utils.RandomElement(questions));
+        this.Questions = savedQData.Questions;
+        toReturn.next(Utils.RandomElement(savedQData.Questions));
 
-      },(error)=>toReturn.error(error));
+      }, (error) => toReturn.error(error));
     } else {
       toReturn.next(Utils.RandomElement(this.Questions));
     }
     return toReturn;
   }
-  public AskNewQuestion():Observable<any> {
-    return this.GetNextQuestion().pipe(map((question) => {
+  public AskNewQuestion(): Observable<Question> {
+    return this.GetNextQuestion().pipe(tap((question) => {
       this.CurrentQuestion = question;
-      if (this.OnUpdateQuestion == null) {
-        return throwError("No Action has been set for QuestionManager.OnSetNewQuestion")
-      } else {
-        this.OnUpdateQuestion(this.CurrentQuestion);
-      }
-    }));
+    },(error)=>this.onError(error)));
   }
-  public VerifyAnswer(Answer: string): Observable<boolean> {
+  onError: (error) => void = (error) => console.error(error);
+  public VerifyAnswer(Answer: string): boolean {
     if (!this.CurrentQuestion) {
-      return throwError("No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
+      throw new Error("No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
     }
     var correct: boolean;
     if (!!this.CurrentQuestion.IsCaseSensitive) { //bang bang you're boolean
       correct =
-        Answer === this.CurrentQuestion.PrimaryAnswer
-          || this.CurrentQuestion.AcceptableAnswers === undefined ? false :
-          _.contains(this.CurrentQuestion.AcceptableAnswers, Answer);
+        (Answer === this.CurrentQuestion.PrimaryAnswer)
+          || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
+          _.contains(this.CurrentQuestion.AcceptableAnswers, Answer));
     } else {
       correct =
-        Answer.toLowerCase() === this.CurrentQuestion.PrimaryAnswer.toLowerCase()
-          || this.CurrentQuestion.AcceptableAnswers === undefined ? false :
+        (Answer.toLowerCase() === this.CurrentQuestion.PrimaryAnswer.toLowerCase())
+          || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
           _.contains(
             this.CurrentQuestion.AcceptableAnswers.map(
               function (value) { return value.toLowerCase() }),
-            Answer.toLowerCase());
+            Answer.toLowerCase()));
     }
     if (correct) { this.CurrentQuestion.AnsweredCorrectly++; } else { this.CurrentQuestion.AnsweredIncorrectly++; }
-    of(correct);
+    return correct;
   }
 }
 export interface IQuestionSource {
-  RetrieveQuestions(): Observable<Question[]>;
+  RetrieveQuestions(): Observable<SavedQuestionsData>;
 }

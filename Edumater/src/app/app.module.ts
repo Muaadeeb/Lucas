@@ -22,7 +22,7 @@ import { FileModalComponent } from './file-modal/file-modal.component';
     QuestionDisplayComponent,
     QuestionerComponent,
     LandingComponent,
-    FileModalComponent,
+    FileModalComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

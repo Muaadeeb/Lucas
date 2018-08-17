@@ -10,8 +10,7 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-lg-10">
-            <label for="QuestionFile" class="control-label">File:</label>
-            <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" (change)="submit()"/>
+            <input type="file" value="Select File to Upload" class="control-input" id="OpenQuestionFile" (change)="submit()" accept="application/json"/>
           </div>
           <!--<div class="col-lg-2">
             <input type="submit" value="Open" class="btn btn-large btn-primary" (click)="submit()" />
@@ -35,7 +34,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" [class.disabled]="!valid" (click)="questionsAccepted()">Accept</button>
+          <button type="button" class="btn btn-primary" [class.disabled]="error!=''" (click)="questionsAccepted()">Accept</button>
           <button type="button" class="btn btn-secondary" (click)="questionsClosed()">Close</button>
         </div>
       </div>

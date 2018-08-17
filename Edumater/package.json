@@ -24,6 +24,8 @@
     "@types/underscore": "^1.8.8",
     "bootstrap": "^4.1.1",
     "core-js": "^2.5.4",
+    "jquery": "^1.9.1",
+    "popper.js": "^1.14.3",
     "rxjs": "^6.0.0",
     "underscore": "^1.9.1",
     "zone.js": "^0.8.26"

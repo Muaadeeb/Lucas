@@ -1,22 +1,22 @@
 <app-file-modal #questionFileModal></app-file-modal>
-<div class="row" id="Question" *ngIf="">
-  <app-question-display style="width:100%;"></app-question-display>
+<div class="row" id="Question" *ngIf="qm.CurrentQuestion">
+  <app-question-display style="width:100%;" [question]="qm.CurrentQuestion"></app-question-display>
   <div class="col-12">
-    <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" id="Answer" />
+    <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" #Answer (keyup.enter)="submitAnswer(Answer)"/>
   </div>
   <div class="col-md-offset-2 col-md-10">
-    <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" />
+    <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" (click)="submitAnswer(Answer)" *ngIf="dismissedVerdict" />
   </div>
 </div>
-<button class="btn btn-success" (click)="this.questionFileModal.RetrieveQuestions()">Open Questions</button>
+<button class="btn btn-success" (click)="openQuestions()" *ngIf="!qm.CurrentQuestion">Open Questions</button>
 
-<div id="Verdict" class="jumbotron bg-danger" style="display:none;">
-  <h1 id="VerdictText" class=""></h1>
-  <small id="VerdictElaboration" class="text-dark"></small>
-  <div id="IncorrectAnswerBox">
+<div id="Verdict" class="jumbotron" [ngClass]="verdict.WasCorrect?'bg-success':'bg-danger'" *ngIf="verdict&&!dismissedVerdict">
+  <h1 id="VerdictText" class="">{{verdict.Header}}</h1>
+  <small id="VerdictElaboration" class="text-dark">{{verdict.Elaboration}}</small>
+  <div id="IncorrectAnswerBox" *ngIf="!verdict.WasCorrect">
     <h3>Correct Answer:</h3>
-    <p id="CorrectAnswerText"></p>
-    <input type="submit" value="Dismiss" class="text-danger btn btn-large" id="DismissVerdict" />
+    <p id="CorrectAnswerText">{{verdict.CorrectAnswer}}</p>
   </div>
+  <div><input type="button" value="{{verdict.ConceedPrompt}}" class="btn btn-large" [ngClass]="verdict.WasCorrect?'text-success':'text-danger'" (click)="dismissedVerdict = true;askNewQuestion();"/></div>
 
 </div>
