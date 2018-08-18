@@ -57,6 +57,7 @@ export class FileModalComponent implements OnInit, IQuestionSource {
   questionsClosed() {
     this.activeModal.dismiss();
     this.activeModal = null;
+    this.error = "";
     this.output$.error(throwError("Question Modal was closed before questions could be loaded."))
   }
 

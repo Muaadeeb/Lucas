@@ -8,9 +8,14 @@ import { Question } from '../common/Question';
 })
 export class QuestionDisplayComponent implements OnInit {
   @Input() question: Question;
+  @Input() editable: boolean = false;
   constructor() { }
 
   ngOnInit() {
+  }
+
+  trackByFn(index: number, item: any) {
+    return index;
   }
 
 }

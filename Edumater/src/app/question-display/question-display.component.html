@@ -2,7 +2,46 @@
   <div class="card card-center">
     <div class="card-header">
       <h2>QUESTION:</h2>
+      <input *ngIf="editable" type="text" [(ngModel)]="question.QuestionText" class="form-control" />
     </div>
-    <p id="QuestionText" class="card-body">{{question.QuestionText}}</p>
+    <div class="card-body">
+      <p *ngIf="!editable; else questionEditor" id="QuestionText" class="card-text">{{question.QuestionText}}</p>
+      <ng-template #questionEditor>
+        <form>
+          <div class="form-group">
+            <label for="primaryAnswer{{index}}">
+              Primary Answer:
+              <input type="text" id="primaryAnswer{{index}}" [(ngModel)]="question.PrimaryAnswer" name="primaryAnswer" class="form-control" />
+            </label>
+          </div>
+          <div class="form-group">
+          <h5>Acceptable Answers:</h5>
+            <div class="row">
+              <div class="col-lg-6 col-sm-12" *ngFor="let answer of question.AcceptableAnswers; let i = index; trackBy:trackByFn;">
+                <div class="input-group AcceptableAnswerEditor">
+                  <input type="text" class="form-control" placeholder="Add an answer" [(ngModel)]="question.AcceptableAnswers[i]" name="acceptableAnswer{{i}}">
+                  <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" (click)="question.AcceptableAnswers.splice(i,1)">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+              <button class="btn btn-success col-12" (click)="question.AcceptableAnswers.push('')">Add</button>
+          </div>
+          <div class="form-group">
+            <label for="priority">
+              Priority:
+              <input type="number" min="-10" max="10" [(ngModel)]="question.Priority" name="priority" id="priority" />
+            </label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="caseSensitive" [(ngModel)]="question.CaseSensitive" name="caseSensitive">
+              <label class="form-check-label" for="caseSensitive">
+                Case Sensitive
+              </label>
+            </div>
+          </div>
+        </form>
+      </ng-template>
+    </div>
   </div>
 </div>

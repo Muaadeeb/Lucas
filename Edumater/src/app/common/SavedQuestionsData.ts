@@ -12,7 +12,7 @@ export function VerifyQuestions(questions:Question[],onError: (error: string) =>
     return false;
   }
 
-  if (questions.length === 0) {
+  if (!(questions instanceof Array)||questions.length === 0) {
     onError("Questions Data of 0 length");
     return false;
   }
