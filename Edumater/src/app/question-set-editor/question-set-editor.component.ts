@@ -12,5 +12,7 @@ export class QuestionSetEditorComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  addQuestion() {
+    this.questions.push(new Question());
+  }
 }

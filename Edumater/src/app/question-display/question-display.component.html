@@ -1,7 +1,8 @@
 <div class="col-12">
   <div class="card card-center">
     <div class="card-header">
-      <h2>QUESTION:</h2>
+      <h2 class="float-left">QUESTION:</h2>
+      <button *ngIf="removable" class="btn btn-secondary float-right" (click)="remove()">Remove</button>
       <input *ngIf="editable" type="text" [(ngModel)]="question.QuestionText" class="form-control" />
     </div>
     <div class="card-body">
@@ -9,7 +10,7 @@
       <ng-template #questionEditor>
         <form>
           <div class="form-group">
-            <label for="primaryAnswer{{index}}">
+            <label for="primaryAnswer{{index}}" style="width:100%">
               Primary Answer:
               <input type="text" id="primaryAnswer{{index}}" [(ngModel)]="question.PrimaryAnswer" name="primaryAnswer" class="form-control" />
             </label>

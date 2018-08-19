@@ -1,22 +1,47 @@
 
-<ul class="list-group" *ngIf="questionNode.Children">
-  <li class="list-group-item" *ngFor="let childNode of questionNode.Children">
-    <div>
-      <span *ngIf="!childNode.EditName; else nameEditor">
-        {{childNode.Name || "(name)"}}
-        <i class="fa fa-pencil editNameButton" aria-hidden="true" (click)="toggleNameEdit(childNode)"></i>
-      </span>
-      <ng-template #nameEditor><input type="text" [(ngModel)]="childNode.Name" (keyup.enter)="childNode.EditName=false"/></ng-template>
+<ng-template #questionModal let-c="close">
+  <div class="modal-dialogue modal-lg">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{modalQuestionNode.Name || "(name)"}}</h4>
+    </div>
+    <div class="modal-body">
+      <app-question-set-editor [questions]="modalQuestionNode.Questions"></app-question-set-editor>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+    </div>
+  </div>
+</ng-template>
 
-      <button class="float-right btn btn-sm btn-secondary" (click)="expandQuestions(childNode)" *ngIf="childNode.Questions&&childNode.Questions.length>0; else addQuestionTemplate">Questions</button>
-      <ng-template #addQuestionTemplate><button class="float-right btn btn-sm" (click)="addQuestion(childNode)">Add Question</button></ng-template>
-      <button class="float-right btn btn-sm btn-secondary" (click)="expandChildren(childNode)" *ngIf="childNode.Children; else addChildTemplate">Children</button>
-      <ng-template #addChildTemplate><button class="float-right btn btn-sm" (click)="addChild(childNode)">Add Child</button></ng-template>
-    </div>
-    <div *ngIf="childNode.Expanded">
-      <hr />
-      <app-question-hierarchy-editor [questionNode]="childNode"></app-question-hierarchy-editor>
-    </div>
-  </li>
-</ul>
-<app-question-set-editor *ngIf="questionNode.QuestionsVisible" [questions]="questionNode.Questions"></app-question-set-editor>
+<div>
+  <span *ngIf="!questionNode.EditName; else nameEditor">
+    {{questionNode.Name || "(name)"}}
+    <i class="fa fa-pencil editNameButton" aria-hidden="true" (click)="nameEdit()"></i>
+  </span>
+  <ng-template #nameEditor><input type="text" [(ngModel)]="questionNode.Name" (keyup.enter)="questionNode.EditName=false" /></ng-template>
+
+  <!--<div>
+    <i class="fas fa-angle-double-up"></i>
+    <i class="fas fa-angle-up"></i>
+    <i class="fas fa-angle-down"></i>
+    <i class="fas fa-angle-double-down"></i>
+  </div>-->
+
+  <button class="float-right btn btn-sm btn-secondary" (click)="expandChildren()" *ngIf="((questionNode.Children!=null)&&isChild); else addChildTemplate">Children</button>
+  <ng-template #addChildTemplate><button class="float-right btn btn-sm" (click)="addChild()">Add Child</button></ng-template>
+
+  <button class="float-right btn btn-sm btn-secondary" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">Questions</button>
+  <ng-template #addQuestionTemplate><button class="float-right btn btn-sm" (click)="addQuestion()">Add Question</button></ng-template>
+
+  <button class="float-right btn btn-sm btn-dark" (click)="remove()" *ngIf="isChild">Remove</button>
+</div>
+
+<div *ngIf="!isChild||questionNode.Expanded">
+  <hr />
+  <ul class="list-group" *ngIf="questionNode.Children">
+    <li class="list-group-item" *ngFor="let childNode of questionNode.Children; let i = index;">
+      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)"></app-question-hierarchy-editor>
+    </li>
+  </ul>
+</div>
+

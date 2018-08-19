@@ -1,2 +1,2 @@
-<app-question-display *ngFor="let question of questions" [question]="question" editable="true"></app-question-display>
-<button class="btn btn-success col-12" (click)="questions.push({})">Add Question</button>
+<app-question-display *ngFor="let question of questions; let i = index;" [question]="question" editable="true" removable="true" (removeRequest)="questions.splice(i,1)"></app-question-display>
+<button class="btn btn-success col-12" (click)="addQuestion()">Add Question</button>

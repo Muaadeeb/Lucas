@@ -14,6 +14,5 @@ export class QuestionNode{
   Questions: Question[];
   Children: QuestionNode[];
   Expanded: boolean;
-  QuestionsVisible: boolean;
   EditName: boolean;
 }

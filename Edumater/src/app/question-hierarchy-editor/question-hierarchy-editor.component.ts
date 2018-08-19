@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angular/core';
 import { QuestionNode } from '../common/QuestionNode';
 import { Question } from '../common/Question';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-question-hierarchy-editor',
@@ -9,32 +10,43 @@ import { Question } from '../common/Question';
 })
 export class QuestionHierarchyEditorComponent implements OnInit {
   @Input() questionNode: QuestionNode;
-  constructor() { }
+  @Input() isChild: boolean = false;
+  @Output() removeRequest = new EventEmitter<QuestionNode>();
+  modalQuestionNode: QuestionNode;
+  @ViewChild("questionModal") questionModal;
+  @ViewChild("nameEditor") nameEditor: HTMLElement;
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit() {
   }
 
-  expandQuestions(childNode: QuestionNode) {
-    childNode.Expanded = true;
-    childNode.QuestionsVisible = !childNode.QuestionsVisible;
+  viewQuestions() {
+    this.openQuestionModal(this.questionNode);
   }
-  expandChildren(childNode: QuestionNode) {
-    childNode.Expanded = !childNode.Expanded
+  addQuestion() {
+    if (!this.questionNode.Questions) this.questionNode.Questions = [];
+    this.questionNode.Questions.push(new Question());
+    this.openQuestionModal(this.questionNode);
   }
-  addQuestion(childNode: QuestionNode) {
-    if (!childNode.Questions) childNode.Questions = [];
-    childNode.Questions.push(new Question());
-    childNode.Expanded = true;
-    childNode.QuestionsVisible = true;
-    childNode.EditName = true;
+  expandChildren() {
+    this.questionNode.Expanded = !this.questionNode.Expanded
   }
-  addChild(childNode: QuestionNode, nameEditor?:HTMLInputElement) {
-    if (!childNode.Children) childNode.Children = [];
-    childNode.Children.push(new QuestionNode());
-    childNode.Expanded = true;
-    if (nameEditor) nameEditor.focus();
+  addChild() {
+    if (!this.questionNode.Children) this.questionNode.Children = [];
+    let newNode = new QuestionNode();
+    newNode.EditName = true;
+    this.questionNode.Children.push(newNode);
+    this.questionNode.Expanded = true;
   }
-  toggleNameEdit(childNode: QuestionNode) {
-    childNode.EditName = !childNode.EditName
+  nameEdit() {
+    this.questionNode.EditName = !this.questionNode.EditName
+  }
+
+  openQuestionModal(node: QuestionNode) {
+    this.modalQuestionNode = node;
+    this.modalService.open(this.questionModal, { ariaLabelledBy: 'Question Editor', size: 'lg'  })
+  }
+  remove() {
+    this.removeRequest.emit(this.questionNode);
   }
 }

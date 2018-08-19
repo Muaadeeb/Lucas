@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Question } from '../common/Question';
 
 @Component({
@@ -9,6 +9,9 @@ import { Question } from '../common/Question';
 export class QuestionDisplayComponent implements OnInit {
   @Input() question: Question;
   @Input() editable: boolean = false;
+  @Input() removable: boolean = false;
+
+  @Output("removeRequest") removeRequest = new EventEmitter<Question>();
   constructor() { }
 
   ngOnInit() {
@@ -17,5 +20,7 @@ export class QuestionDisplayComponent implements OnInit {
   trackByFn(index: number, item: any) {
     return index;
   }
-
+  remove() {
+    this.removeRequest.emit(this.question);
+  }
 }
