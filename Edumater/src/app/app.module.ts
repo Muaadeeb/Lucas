@@ -10,6 +10,8 @@ import { QuestionDisplayComponent } from './question-display/question-display.co
 import { QuestionerComponent } from './questioner/questioner.component';
 import { LandingComponent } from './landing/landing.component';
 import { FileModalComponent } from './file-modal/file-modal.component';
+import { QuestionSetEditorComponent } from './question-set-editor/question-set-editor.component';
+import { QuestionHierarchyEditorComponent } from './question-hierarchy-editor/question-hierarchy-editor.component';
 
 @NgModule({
   imports: [
@@ -24,7 +26,9 @@ import { FileModalComponent } from './file-modal/file-modal.component';
     QuestionDisplayComponent,
     QuestionerComponent,
     LandingComponent,
-    FileModalComponent
+    FileModalComponent,
+    QuestionSetEditorComponent,
+    QuestionHierarchyEditorComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

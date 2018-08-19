@@ -3,3 +3,7 @@
   float: none; /* Added */
   margin-bottom: 10px; /* Added */
 }
+
+.AcceptableAnswerEditor {
+  margin-bottom: 7px;
+}
