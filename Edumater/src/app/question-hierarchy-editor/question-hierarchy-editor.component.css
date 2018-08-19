@@ -2,3 +2,11 @@
 .editNameButton {
   cursor: pointer;
 }
+
+.questionMoveBox{
+  font-size:200%;
+}
+
+.qn-btn{
+  margin-left:5px;
+}

@@ -8,7 +8,7 @@ import { Question } from '../common/Question';
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
-  exampleNode: QuestionNode = new QuestionNode(
+  exampleNode = new QuestionNode(
     "Root!",
     [
       new Question(
@@ -24,22 +24,18 @@ export class LandingComponent implements OnInit {
       )
     ],
     [
-      {
-        Name: "Child",
-        Questions: [],
-        Expanded: false,
-        QuestionsVisible: false,
-        Children: null
-      },
-      {
-        Name: "Another Child",
-        Questions: [],
-        Expanded: false,
-        QuestionsVisible: false,
-        Children: [
-          {
-            Name: "SUPA CHILD",
-            Questions: [
+      new QuestionNode(
+        "Child",
+        null,
+        null
+      ),
+      new QuestionNode(
+        "Another Child",
+        null,
+        [
+          new QuestionNode(
+            "SUPA CHILD",
+            [
               new Question(
                 "the questions within",
                 "Woah",
@@ -51,13 +47,10 @@ export class LandingComponent implements OnInit {
                 2,
                 2
               )
-            ],
-            Children: null,
-            Expanded: false,
-            QuestionsVisible: false
-          }
+            ]
+          )
         ]
-      }
+      )
     ],
     false,
     false

@@ -7,7 +7,6 @@ export class QuestionNode{
     this.Questions = Questions;
     this.Children = Children;
     this.Expanded = Expanded || false;
-    this.QuestionsVisible = QuestionsVisible || false;
     this.EditName = EditName || false;
   }
   Name: string;
