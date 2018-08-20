@@ -20,32 +20,20 @@
   </span>
   <ng-template #nameEditor><input type="text" [(ngModel)]="questionNode.Name" (keyup.enter)="questionNode.EditName=false" (blur)="questionNode.EditName=false" /></ng-template>
 
-  <ng-container *ngIf="isChild">
-    <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="expandChildren()" *ngIf="((questionNode.Children!=null)&&isChild); else addChildTemplate">Children</button>
-    <ng-template #addChildTemplate><button class="float-right btn btn-sm qn-btn" (click)="addChild()">Add Child</button></ng-template>
-  </ng-container>
+  <button class="float-right btn btn-sm qn-btn" (click)="addChild()">Add Child</button>
+  <button class="float-right btn btn-sm qn-btn" [ngClass]="questionNode.Expanded?'btn-secondary':'btn-outline-secondary'" (click)="expandChildren()" *ngIf="(questionNode.Children!=null)&&isChild">Children</button>
 
   <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">Questions</button>
   <ng-template #addQuestionTemplate><button class="float-right btn btn-sm qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
 
   <button class="float-right btn btn-sm btn-dark qn-btn" (click)="remove()" *ngIf="isChild">Remove</button>
-
-  <div class="btn-group float-right" role="group" aria-label="Move Bar" *ngIf="isChild">
-    <button type="button" class="btn btn-sm btn-dark qn-btn" (click)="moveRequest(MoveDirection.Top)"><i class="fa fa-angle-double-up"></i></button>
-    <button type="button" class="btn btn-sm btn-dark qn-btn" (click)="moveRequest(MoveDirection.Up)"><i class="fa fa-angle-up"></i></button>
-    <button type="button" class="btn btn-sm btn-dark qn-btn" (click)="moveRequest(MoveDirection.Down)"><i class="fa fa-angle-down"></i></button>
-    <button type="button" class="btn btn-sm btn-dark qn-btn" (click)="moveRequest(MoveDirection.Bottom)"><i class="fa fa-angle-double-down"></i></button>
-  </div>
 </div>
 
-<div *ngIf="!isChild||questionNode.Expanded">
+<div *ngIf="!isChild||questionNode.Expanded" >
   <hr />
-  <ul class="list-group" *ngIf="questionNode.Children">
+  <ul class="list-group" *ngIf="questionNode.Children" [(dragulaModel)]="questionNode.Children" dragula="QUESTION_NODES">
     <li class="list-group-item" *ngFor="let childNode of questionNode.Children; let i = index;">
       <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)"></app-question-hierarchy-editor>
-    </li>
-    <li class="list-group-item">
-      <button class="btn col-12" (click)="addChild()">Add Child</button>
     </li>
   </ul>
 </div>

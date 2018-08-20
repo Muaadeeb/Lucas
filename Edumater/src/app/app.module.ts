@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { DragulaModule } from 'ng2-dragula';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -17,6 +18,7 @@ import { QuestionHierarchyEditorComponent } from './question-hierarchy-editor/qu
   imports: [
     BrowserModule,
     FormsModule,
+    DragulaModule.forRoot(),
     AppRoutingModule,
     NgbModule.forRoot()
   ],

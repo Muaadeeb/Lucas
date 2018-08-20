@@ -3,13 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\Common",
+    "\\src\\app\\common",
     "\\src\\app\\file-modal",
-    "\\src\\app\\headbar",
     "\\src\\app\\landing",
     "\\src\\app\\question-display",
-    "\\src\\app\\questioner"
+    "\\src\\app\\question-hierarchy-editor",
+    "\\src\\app\\question-set-editor",
+    "\\src\\assets"
   ],
-  "SelectedNode": "\\src\\app\\verdict.service.ts",
+  "SelectedNode": "\\src\\app",
   "PreviewInSolutionExplorer": false
 }
