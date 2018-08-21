@@ -13,12 +13,16 @@ import { LandingComponent } from './landing/landing.component';
 import { FileModalComponent } from './file-modal/file-modal.component';
 import { QuestionSetEditorComponent } from './question-set-editor/question-set-editor.component';
 import { QuestionHierarchyEditorComponent } from './question-hierarchy-editor/question-hierarchy-editor.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     DragulaModule.forRoot(),
+    BrowserAnimationsModule,
+    MatCheckboxModule,
     AppRoutingModule,
     NgbModule.forRoot()
   ],

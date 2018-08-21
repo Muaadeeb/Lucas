@@ -11,6 +11,6 @@
     "\\src\\app\\question-set-editor",
     "\\src\\assets"
   ],
-  "SelectedNode": "\\src\\app",
+  "SelectedNode": "\\src\\app\\landing\\landing.component.html",
   "PreviewInSolutionExplorer": false
 }

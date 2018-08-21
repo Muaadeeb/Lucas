@@ -52,8 +52,6 @@ export class LandingComponent implements OnInit {
         ]
       )
     ],
-    false,
-    false
   );
   constructor() { }
 

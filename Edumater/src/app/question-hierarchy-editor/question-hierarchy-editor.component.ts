@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angu
 import { QuestionNode } from '../common/QuestionNode';
 import { Question } from '../common/Question';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import * as _ from "underscore";
 
 @Component({
   selector: 'app-question-hierarchy-editor',
@@ -11,11 +12,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class QuestionHierarchyEditorComponent implements OnInit {
   @Input() questionNode: QuestionNode;
   @Input() isChild: boolean = false;
+  @Input() selectMode: boolean = false;
   @Output() removeRequest = new EventEmitter<QuestionNode>();
-  @Output("moveRequest") moveRequestEvent = new EventEmitter<MoveDirection>();
-  modalQuestionNode: QuestionNode;
+  @Output("selectChange") selectChangeEvent = new EventEmitter<boolean>();
   @ViewChild("questionModal") questionModal;
   @ViewChild("nameEditor") nameEditor: HTMLElement;
+  modalQuestionNode: QuestionNode;
+  selectIndeterminate: boolean;
   constructor(private modalService: NgbModal) { }
 
   ngOnInit() {
@@ -50,5 +53,22 @@ export class QuestionHierarchyEditorComponent implements OnInit {
   }
   remove() {
     this.removeRequest.emit(this.questionNode);
+  }
+  childSelectChange(checked: boolean) {
+    this.selectIndeterminate = checked || _.any(this.questionNode.Children, q => q.Selected);
+    this.selectChangeEvent.emit(checked);
+  }
+  selectChange(value: boolean) {
+    this.setNodeSelected(this.questionNode, value);
+    if(this.questionNode.Children)this.questionNode.Expanded = true;
+    this.selectChangeEvent.emit(value);
+  }
+  setNodeSelected(node: QuestionNode, value: boolean) {
+    node.Selected = value;
+    if (node.Children) {
+      for (var i = 0; i < node.Children.length; i++) {
+        this.setNodeSelected(node.Children[i], value);
+      }
+    }
   }
 }

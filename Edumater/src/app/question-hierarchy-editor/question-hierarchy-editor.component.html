@@ -14,26 +14,33 @@
 </ng-template>
 
 <div>
-  <span *ngIf="!questionNode.EditName; else nameEditor">
-    {{questionNode.Name || "(name)"}}
-    <i class="fa fa-pencil editNameButton" aria-hidden="true" (click)="nameEdit()"></i>
-  </span>
+  <!-- Some fancy mumbo jumbo to insert the title into the checkbox in selectMode, and just leave in the open otherwise. -->
+  <ng-template #Title>
+    <span *ngIf="!questionNode.EditName; else nameEditor">
+      {{questionNode.Name || "(name)"}}
+      <i class="fa fa-pencil editNameButton" aria-hidden="true" (click)="nameEdit()"></i>
+    </span>
+  </ng-template>
+  <mat-checkbox *ngIf="selectMode; else Title" (change)="selectChange($event.checked)" [indeterminate]="selectIndeterminate" [checked]="questionNode.Selected"><ng-container *ngTemplateOutlet="Title"></ng-container></mat-checkbox>
+  <!-- (Here ends the mumbo jumo.  Well, at least, this particular mumbo jumbo) -->
+
   <ng-template #nameEditor><input type="text" [(ngModel)]="questionNode.Name" (keyup.enter)="questionNode.EditName=false" (blur)="questionNode.EditName=false" /></ng-template>
 
   <button class="float-right btn btn-sm qn-btn" (click)="addChild()">Add Child</button>
   <button class="float-right btn btn-sm qn-btn" [ngClass]="questionNode.Expanded?'btn-secondary':'btn-outline-secondary'" (click)="expandChildren()" *ngIf="(questionNode.Children!=null)&&isChild">Children</button>
 
-  <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">Questions</button>
-  <ng-template #addQuestionTemplate><button class="float-right btn btn-sm qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
-
+  <ng-container *ngIf="!selectMode">
+    <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">Questions</button>
+    <ng-template #addQuestionTemplate><button class="float-right btn btn-sm qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
+  </ng-container>
   <button class="float-right btn btn-sm btn-dark qn-btn" (click)="remove()" *ngIf="isChild">Remove</button>
 </div>
 
-<div *ngIf="!isChild||questionNode.Expanded" >
+<div *ngIf="!isChild||questionNode.Expanded">
   <hr />
   <ul class="list-group" *ngIf="questionNode.Children" [(dragulaModel)]="questionNode.Children" dragula="QUESTION_NODES">
     <li class="list-group-item" *ngFor="let childNode of questionNode.Children; let i = index;">
-      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)"></app-question-hierarchy-editor>
+      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)" [selectMode]="selectMode" (selectChange)="childSelectChange($event)"></app-question-hierarchy-editor>
     </li>
   </ul>
 </div>
