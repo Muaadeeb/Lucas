@@ -40,7 +40,7 @@
   <hr />
   <ul class="list-group" *ngIf="questionNode.Children" [(dragulaModel)]="questionNode.Children" dragula="QUESTION_NODES">
     <li class="list-group-item" *ngFor="let childNode of questionNode.Children; let i = index;">
-      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)" [selectMode]="selectMode" (selectChange)="childSelectChange($event)"></app-question-hierarchy-editor>
+      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)" [selectMode]="selectMode" (selectChange)="childSelectChange($event)" [fullySelectable]="fullySelectable"></app-question-hierarchy-editor>
     </li>
   </ul>
 </div>

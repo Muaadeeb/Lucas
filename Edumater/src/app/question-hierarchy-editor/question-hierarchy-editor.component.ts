@@ -1,27 +1,36 @@
-import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, EventEmitter, Output, OnChanges } from '@angular/core';
 import { QuestionNode } from '../common/QuestionNode';
 import { Question } from '../common/Question';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as _ from "underscore";
+import { DragulaService } from 'ng2-dragula';
 
 @Component({
   selector: 'app-question-hierarchy-editor',
   templateUrl: './question-hierarchy-editor.component.html',
   styleUrls: ['./question-hierarchy-editor.component.css']
 })
-export class QuestionHierarchyEditorComponent implements OnInit {
+export class QuestionHierarchyEditorComponent implements OnInit, OnChanges {
   @Input() questionNode: QuestionNode;
   @Input() isChild: boolean = false;
   @Input() selectMode: boolean = false;
+  @Input() fullySelectable: boolean = true;  //Whether selecting all child nodes of a node will select that node as well.
   @Output() removeRequest = new EventEmitter<QuestionNode>();
   @Output("selectChange") selectChangeEvent = new EventEmitter<boolean>();
   @ViewChild("questionModal") questionModal;
   @ViewChild("nameEditor") nameEditor: HTMLElement;
   modalQuestionNode: QuestionNode;
   selectIndeterminate: boolean;
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+    private dragulaService: DragulaService) { }
 
   ngOnInit() {
+
+  }
+  ngOnChanges() {
+    if (this.questionNode.Children ===[]) {
+      this.questionNode.Children = null;
+    }
   }
 
 
@@ -55,12 +64,16 @@ export class QuestionHierarchyEditorComponent implements OnInit {
     this.removeRequest.emit(this.questionNode);
   }
   childSelectChange(checked: boolean) {
-    this.selectIndeterminate = checked || _.any(this.questionNode.Children, q => q.Selected);
+    if (this.fullySelectable==true) { //This is actually necessary.   I have no idea, do not try to ask.
+      this.questionNode.Selected = _.all(this.questionNode.Children, q => q.Selected);
+      console.log(this.fullySelectable);
+    }
+    this.selectIndeterminate = !(this.fullySelectable&&this.questionNode.Selected)&&(checked || _.any(this.questionNode.Children, q => q.Selected));
     this.selectChangeEvent.emit(checked);
   }
   selectChange(value: boolean) {
     this.setNodeSelected(this.questionNode, value);
-    if(this.questionNode.Children)this.questionNode.Expanded = true;
+    if (this.questionNode.Children) this.questionNode.Expanded = false;
     this.selectChangeEvent.emit(value);
   }
   setNodeSelected(node: QuestionNode, value: boolean) {
