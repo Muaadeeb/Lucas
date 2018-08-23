@@ -1,11 +1,12 @@
 import { Question } from "./Question";
+import { QuestionNode } from "./QuestionNode";
 export class SavedQuestionsData {
-  SaveName: string;
-  Questions: Question[];
+  NodeName: string;
+  Data: QuestionNode;
   CreateDate: Date;
   Notes: string;
-  
 }
+
 export function VerifyQuestions(questions:Question[],onError: (error: string) => void = (error) => console.error(error)): boolean {
   if (questions === undefined || questions === null) {
     onError("Questions Data null or undefined");

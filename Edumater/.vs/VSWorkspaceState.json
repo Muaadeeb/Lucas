@@ -9,8 +9,8 @@
     "\\src\\app\\question-display",
     "\\src\\app\\question-hierarchy-editor",
     "\\src\\app\\question-set-editor",
-    "\\src\\assets"
+    "\\src\\app\\questioner"
   ],
-  "SelectedNode": "\\src\\app\\landing\\landing.component.html",
+  "SelectedNode": "\\src\\app\\questioner\\questioner.component.ts",
   "PreviewInSolutionExplorer": false
 }
