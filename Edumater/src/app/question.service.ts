@@ -2,43 +2,50 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, throwError, of, Subscriber, TeardownLogic } from 'rxjs';
 import { tap } from "rxjs/operators";
 import * as _ from "underscore";
-import { Utils } from './utils';
-import { Question } from './Question';
-import { SavedQuestionsData, VerifyQuestions } from './SavedQuestionsData';
+import { Utils } from './common/Utils';
+import { Question } from './common/Question';
+import { SavedQuestionsData, VerifyQuestions } from './common/SavedQuestionsData';
+import { QuestionNode } from './common/QuestionNode';
 
-export class QuestionManager {
-  private Questions: Question[];
+@Injectable({
+  providedIn: 'root'
+})
+export class QuestionService {
+  public RootNode: QuestionNode;
+  private ActiveQuestions: Question[];
   public CurrentQuestion: Question;
-  private questionSource: IQuestionSource;
-  public constructor(qs: IQuestionSource) {
-    this.questionSource = qs;
+  public constructor() {
+    this.RootNode = new QuestionNode("Question-Root", [], []);
+    this.ActiveQuestions = [];
   }
+
+  public AddNode(questionNode: QuestionNode) {
+    this.RootNode.Children.push(questionNode);
+  }
+
+  public UpdateQuestionSelection() {
+    let questionArrays = new Array<Question[]>();
+    //No, I'm not planning on kidnapping anyone
+    let grabChildren = (questionNode: QuestionNode) => {
+      if (questionNode.Selected)
+        questionArrays.push(questionNode.Questions);
+      questionNode.Children.forEach(c => grabChildren(c));
+    }
+    grabChildren(this.RootNode);
+    this.ActiveQuestions = _.flatten(questionArrays);
+  }
+
 
   //public OnQuestionVerified: (question: Question, WasCorrect: boolean) => void;
   public OnUpdateQuestion: (question: Question) => void = () => { };
 
-
   private GetNextQuestion(): Observable<Question> {
-    let toReturn: Subject<Question> = new Subject<Question>();
-    if (this.Questions === undefined || this.Questions === null || this.Questions.length === 0) {
-      this.questionSource.RetrieveQuestions().subscribe((savedQData) => {
-        if (!VerifyQuestions(savedQData.Questions)) {
-          toReturn.error("Questions failed to verify!");
-          return;
-        }
-        this.Questions = savedQData.Questions;
-        toReturn.next(Utils.RandomElement(savedQData.Questions));
-
-      }, (error) => toReturn.error(error));
-    } else {
-      toReturn.next(Utils.RandomElement(this.Questions));
-    }
-    return toReturn;
+    return of(Utils.RandomElement(this.ActiveQuestions));
   }
   public AskNewQuestion(): Observable<Question> {
     return this.GetNextQuestion().pipe(tap((question) => {
       this.CurrentQuestion = question;
-    },(error)=>this.onError(error)));
+    }, (error) => this.onError(error)));
   }
   onError: (error) => void = (error) => console.error(error);
   public VerifyAnswer(Answer: string): boolean {
@@ -49,12 +56,12 @@ export class QuestionManager {
     if (!!this.CurrentQuestion.IsCaseSensitive) { //bang bang you're boolean
       correct =
         (Answer === this.CurrentQuestion.PrimaryAnswer)
-          || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
+        || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
           _.contains(this.CurrentQuestion.AcceptableAnswers, Answer));
     } else {
       correct =
         (Answer.toLowerCase() === this.CurrentQuestion.PrimaryAnswer.toLowerCase())
-          || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
+        || (this.CurrentQuestion.AcceptableAnswers === undefined ? false :
           _.contains(
             this.CurrentQuestion.AcceptableAnswers.map(
               function (value) { return value.toLowerCase() }),
@@ -63,7 +70,4 @@ export class QuestionManager {
     if (correct) { this.CurrentQuestion.AnsweredCorrectly++; } else { this.CurrentQuestion.AnsweredIncorrectly++; }
     return correct;
   }
-}
-export interface IQuestionSource {
-  RetrieveQuestions(): Observable<SavedQuestionsData>;
 }

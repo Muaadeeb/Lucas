@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utils } from "./common/utils";
+import { Utils } from "./common/Utils";
 import { Verdict } from './common/Verdict';
 
 @Injectable({

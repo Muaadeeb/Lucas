@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef,EventEmitter } from '@angular/core';
 import { FileModalComponent } from '../file-modal/file-modal.component';
-import { QuestionManager } from '../common/QuestionManager';
 import { Question } from '../common/Question';
 import { VerdictService } from '../verdict.service';
 import { Verdict } from '../common/Verdict';
+import { QuestionService } from '../question.service';
 
 @Component({
   selector: 'app-questioner',
@@ -13,24 +13,23 @@ import { Verdict } from '../common/Verdict';
 export class QuestionerComponent implements OnInit {
   @ViewChild("questionFileModal") questionFileModal: FileModalComponent;
   answer: HTMLInputElement;
-  qm: QuestionManager;
   verdict: Verdict;
   dismissedVerdict: boolean = true;
   conceedFocusEventEmitter: EventEmitter<void> = new EventEmitter<void>();
-  constructor(private verdictor: VerdictService) { }
+  constructor(private verdictor: VerdictService,
+    private qs: QuestionService) { }
 
   ngOnInit() {
-    this.qm = new QuestionManager(this.questionFileModal);
   }
   openQuestions() {
-    this.askNewQuestion();
+    this.questionFileModal.RetrieveQuestions();
   }
   askNewQuestion() {
-    this.qm.AskNewQuestion().subscribe(() => { if (this.answer!=null) this.answer.focus() });
+    this.qs.AskNewQuestion().subscribe(() => { if (this.answer!=null) this.answer.focus() });
   }
   submitAnswer($answer, $dismiss) {
     if (this.dismissedVerdict) {
-      this.verdict = this.verdictor.MakeVerdict(this.qm.CurrentQuestion.PrimaryAnswer, this.qm.VerifyAnswer($answer.value));
+      this.verdict = this.verdictor.MakeVerdict(this.qs.CurrentQuestion.PrimaryAnswer, this.qs.VerifyAnswer($answer.value));
       this.askNewQuestion();
       this.dismissedVerdict = false;
       this.answer = $answer;

@@ -1,6 +1,6 @@
 <app-file-modal #questionFileModal></app-file-modal>
-<div class="row" id="Question" *ngIf="qm.CurrentQuestion">
-  <app-question-display style="width:100%;" [question]="qm.CurrentQuestion"></app-question-display>
+<div class="row" id="Question" *ngIf="qs.CurrentQuestion">
+  <app-question-display style="width:100%;" [question]="qs.CurrentQuestion"></app-question-display>
   <div class="col-12">
     <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" #Answer (keyup.enter)="submitAnswer(Answer)"/>
   </div>
@@ -8,7 +8,7 @@
     <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" (click)="submitAnswer(Answer)" *ngIf="dismissedVerdict" />
   </div>
 </div>
-<button class="btn btn-success" (click)="openQuestions()" *ngIf="!qm.CurrentQuestion">Open Questions</button>
+<button class="btn btn-success" (click)="openQuestions()" *ngIf="!qs.CurrentQuestion">Open Questions</button>
 
 <div id="Verdict" class="jumbotron" [ngClass]="verdict.WasCorrect?'bg-success':'bg-danger'" *ngIf="verdict&&!dismissedVerdict">
   <h1 id="VerdictText" class="">{{verdict.Header}}</h1>
