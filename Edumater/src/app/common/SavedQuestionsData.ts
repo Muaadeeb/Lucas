@@ -1,8 +1,8 @@
 import { Question } from "./Question";
-import { QuestionNode } from "./QuestionNode";
+import { SavedQuestionNode } from "./SavedQuestionNode";
+
 export class SavedQuestionsData {
-  NodeName: string;
-  Data: QuestionNode;
+  Data: SavedQuestionNode;
   CreateDate: Date;
   Notes: string;
 }
