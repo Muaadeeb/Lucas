@@ -97,7 +97,7 @@ export class FileModalComponent implements OnInit {
     this.activeModal = null;
     this.error = "";
     this.saveMode = "Monolithic";
-    this.output$.error("Question Modal was closed before questions could be loaded.");
+    if(!this.saving)this.output$.error("Question Modal was closed before questions could be loaded.");
   }
 
   public RetrieveQuestions(): Observable<SavedQuestionsData> {
