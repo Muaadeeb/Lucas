@@ -2,6 +2,11 @@ import { Question } from "./Question";
 import { SavedQuestionNode } from "./SavedQuestionNode";
 
 export class SavedQuestionsData {
+  constructor(Data?: SavedQuestionNode, CreateDate?: Date, Notes?: string) {
+    this.Data = Data;
+    this.CreateDate = CreateDate || new Date();
+    this.Notes = Notes;
+  }
   Data: SavedQuestionNode;
   CreateDate: Date;
   Notes: string;

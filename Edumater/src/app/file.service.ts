@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
-import { QuestionNode } from './common/QuestionNode';
+import { Injectable, PACKAGE_ROOT_URL } from '@angular/core';
+import { QuestionNode, RecurseNodeChildren } from './common/QuestionNode';
 import { Observable, throwError, Subject } from 'rxjs';
-declare var JSZip: any;
 import * as _ from "underscore";
-import { SavedQuestionNode } from './common/SavedQuestionNode';
 import { SavedQuestionsData } from './common/SavedQuestionsData';
-
+import { saveAs } from "file-saver";
+import { ToSavedQuestionNode } from './common/SavedQuestionNode';
+//import * as JSZip from "jszip";
+declare var JSZip: any;
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,6 @@ export class FileService {
       return throwError("No files selected");
     }
     this.fileStream = new Subject<LoadedSavedQuestionsData>();
-    let path: string[] = [];
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
       if (file) {
@@ -31,7 +31,7 @@ export class FileService {
               try {
                 // more files !
                 zipReader.loadAsync(fr.result)
-                  .then(this.handleZipLoad(path, this))
+                  .then(this.handleZipLoad(this))
               } catch (e) {
                 return throwError(e);
               }
@@ -40,7 +40,7 @@ export class FileService {
             break;
           case "json":
             fr.onload = () => {
-              this.handleFile(fr.result, path);
+              this.handleFile(<string>fr.result, []);
             }
             fr.readAsText(file);
             break;
@@ -54,14 +54,14 @@ export class FileService {
     }
     return this.fileStream.asObservable();
   }
-  handleZipLoad(path: string[], context: FileService): (zip: any, path: string[]) => void {
-    return (zip: any, relativePath: string[]) => {
+  handleZipLoad(context: FileService): (zip: /*JSZip*/any) => void {
+    return (zip: any) => {
       zip.forEach((relativePath, file) => {
-        context.handleZipObject(file, zip, context);
+        context.handleZipObject(file, context);
       });
     };
   }
-  handleZipObject(zipObject: any, zip: any, context: FileService) {
+  handleZipObject(zipObject: any, context: FileService) {
     if (!zipObject.dir) {
       zipObject.async("string").then((content) => context.handleFile(content, context.getNamePath(zipObject.name)));
     }
@@ -81,15 +81,66 @@ export class FileService {
     this.fileStream.next(new LoadedSavedQuestionsData(path, data));
   }
 
-
-  save(questionNode: QuestionNode, flat:boolean = false) {
+  //onUpdate is only called when the style is not Monolithic (that is, the root question node is not selected)
+  save(questionNode: QuestionNode, flat: boolean = false, onUpdate?: (percent: number, file: string) => void) {
     if (questionNode.Selected) { //Monolithic Style
-
-    } else if (flat) { //Single dot-denoted directory style
-
-    } else { //Directories!!!
-
+      saveAs(
+        new Blob([JSON.stringify(
+          new SavedQuestionsData(ToSavedQuestionNode(questionNode))
+        )], {
+            type: "text/plain;charset=utf-8"
+          }),
+        questionNode.Name.replace("/", "_") + ".json");
+    } else {
+      var zip = new JSZip();
+      if (flat) { //Single-directory dot-denoted hierarchy reprentation ("I/Like/Movies.json" -> "I.Like.Movies.json")
+        //RecurseNodeChildren<string[]>(questionNode, (qn, path) => {
+        //  zip.file(this.createFilename(path, qn.Name, "."), "");
+        //  path.push(qn.Name);
+        //  return path;
+        //}, []);
+        this.DataFromSelection(questionNode).subscribe((data) => {
+          zip.file(this.createFilename(data.path, data.qn.Data.Name, "."), JSON.stringify(data.qn));
+        })
+      } else { //Directories!!!
+        //let recurse = (qn: QuestionNode, path: string[]) => {
+        //  let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
+        //  zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
+        //  if (qn.Children) {
+        //    path = _.clone(path);
+        //    path.push(qn.Name);
+        //    qn.Children.forEach((qn) => recurse(qn, path));
+        //  }
+        //}
+        //recurse(questionNode, []);
+        this.DataFromSelection(questionNode).subscribe((data) => {
+          zip.file(this.createFilename(data.path, data.qn.Data.Name, "/"), JSON.stringify(data.qn));
+        })
+      }
+      zip.generateAsync({ type: "blob" }, (metadata) => {
+        if (onUpdate) onUpdate(metadata.percent, metadata.currentFile);
+      }).then((b) => {
+        saveAs(b, questionNode.Name.replace("/", "_") + ".zip");
+      });
     }
+  }
+  DataFromSelection(questionNode: QuestionNode): Observable<{qn: SavedQuestionsData, path: string[]}> {
+    return new Observable((observer) => {
+      let recurse = (qn: QuestionNode, path: string[]) => {
+        let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
+        //zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
+        observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: path });
+        if (qn.Children) {
+          path = _.clone(path);
+          path.push(qn.Name);
+          qn.Children.forEach((qn) => recurse(qn, path));
+        }
+      }
+      recurse(questionNode, []);
+    })
+  }
+  createFilename(path: string[], filename: string, seperator: string) {
+    return `${path.join(seperator)}${seperator}${filename}.json`;
   }
   getNamePath(name: string): string[] {
     if (name.toLowerCase().endsWith(".json")) {

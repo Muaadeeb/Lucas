@@ -21,6 +21,10 @@ export class QuestionService {
 
   public AddNode(questionNode: QuestionNode) {
     this.RootNode.Children.push(questionNode);
+    this.UpdateQuestionSelection();
+    if (this.CurrentQuestion == null) {
+      this.AskNewQuestion();
+    }
   }
 
   public UpdateQuestionSelection() {

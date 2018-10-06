@@ -8,7 +8,6 @@
     <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" (click)="submitAnswer(Answer)" *ngIf="dismissedVerdict" />
   </div>
 </div>
-<button class="btn btn-success" (click)="openQuestions()" *ngIf="!qs.CurrentQuestion">Open Questions</button>
 
 <div id="Verdict" class="jumbotron" [ngClass]="verdict.WasCorrect?'bg-success':'bg-danger'" *ngIf="verdict&&!dismissedVerdict">
   <h1 id="VerdictText" class="">{{verdict.Header}}</h1>
@@ -18,5 +17,9 @@
     <p id="CorrectAnswerText">{{verdict.CorrectAnswer}}</p>
   </div>
   <div><input type="button" value="{{verdict.ConceedPrompt}}" class="btn btn-large" [ngClass]="verdict.WasCorrect?'text-success':'text-danger'" (click)="dismissedVerdict = true;askNewQuestion();"/></div>
-
 </div>
+
+
+<button class="btn btn-success" (click)="openQuestions()" *ngIf="!qs.CurrentQuestion; else Save">Open Questions</button>
+<ng-template #Save><button class="btn btn-success" (click)="saveQuestions()">Save Questions</button></ng-template>
+

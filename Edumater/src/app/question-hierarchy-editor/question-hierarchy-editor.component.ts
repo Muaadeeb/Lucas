@@ -12,9 +12,10 @@ import { DragulaService } from 'ng2-dragula';
 })
 export class QuestionHierarchyEditorComponent implements OnInit, OnChanges {
   @Input() questionNode: QuestionNode;
-  @Input() isChild: boolean = false;
   @Input() selectMode: boolean = false;
   @Input() fullySelectable: boolean = true;  //Whether selecting all child nodes of a node will select that node as well.
+
+  @Input() isChild: boolean = false;
   @Output() removeRequest = new EventEmitter<QuestionNode>();
   @Output("selectChange") selectChangeEvent = new EventEmitter<boolean>();
   @ViewChild("questionModal") questionModal;

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { QuestionNode } from '../common/QuestionNode';
 import { Question } from '../common/Question';
+import { FileModalComponent } from '../file-modal/file-modal.component';
 
 @Component({
   selector: 'app-landing',
@@ -8,6 +9,8 @@ import { Question } from '../common/Question';
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
+  @ViewChild("questionFileModal") questionFileModal: FileModalComponent;
+
   exampleNode = new QuestionNode(
     "Root!",
     [
@@ -53,9 +56,13 @@ export class LandingComponent implements OnInit {
       )
     ],
   );
-  constructor() { }
+  constructor() {
+    this.exampleNode;
+  }
 
   ngOnInit() {
   }
-
+  saveTest() {
+    this.questionFileModal.SaveQuestions(this.exampleNode);
+  }
 }

@@ -4,6 +4,7 @@ import { Question } from '../common/Question';
 import { VerdictService } from '../verdict.service';
 import { Verdict } from '../common/Verdict';
 import { QuestionService } from '../question.service';
+import { ToQuestionNode } from '../common/SavedQuestionNode';
 
 @Component({
   selector: 'app-questioner',
@@ -22,7 +23,9 @@ export class QuestionerComponent implements OnInit {
   ngOnInit() {
   }
   openQuestions() {
-    this.questionFileModal.RetrieveQuestions();
+    this.questionFileModal.RetrieveQuestions().subscribe((sqd) => {
+      this.qs.AddNode(ToQuestionNode(sqd.Data));
+    });
   }
   askNewQuestion() {
     this.qs.AskNewQuestion().subscribe(() => { if (this.answer!=null) this.answer.focus() });
@@ -37,6 +40,9 @@ export class QuestionerComponent implements OnInit {
       this.dismissedVerdict = true;
       this.answer.value = "";
     }
+  }
+
+  saveQuestions() {
     
   }
 }
