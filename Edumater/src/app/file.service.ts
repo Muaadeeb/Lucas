@@ -1,3 +1,4 @@
+
 import { Injectable, PACKAGE_ROOT_URL } from '@angular/core';
 import { QuestionNode, RecurseNodeChildren } from './common/QuestionNode';
 import { Observable, throwError, Subject } from 'rxjs';
@@ -129,11 +130,15 @@ export class FileService {
       let recurse = (qn: QuestionNode, path: string[]) => {
         let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
         //zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
-        observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: path });
-        if (qn.Children) {
-          path = _.clone(path);
-          path.push(qn.Name);
-          qn.Children.forEach((qn) => recurse(qn, path));
+        if (qn.Selected) {
+          observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: path });
+        }
+        else {
+          if (qn.Children) {
+            path = _.clone(path);
+            path.push(qn.Name);
+            qn.Children.forEach((qn) => recurse(qn, path));
+          }
         }
       }
       recurse(questionNode, []);

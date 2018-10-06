@@ -42,6 +42,12 @@
         <option *ngFor="let sm of saveModeNames" [value]="sm">{{sm}} - {{saveModes[sm].Description}}</option>
       </select>
     </div>
+    <div *ngIf="saveMode=='Custom'">
+      <div id="q-selector">
+        <app-question-hierarchy-editor [questionNode]="saveData" fullySelectable="false" selectMode="true"></app-question-hierarchy-editor>
+      </div>
+      <mat-checkbox [checked]="flat" (change)="flat=$event.checked" id="q-flat">Flat</mat-checkbox>
+    </div>
   </ng-template>
 
   <div class="modal-footer">

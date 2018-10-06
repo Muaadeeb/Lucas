@@ -4,7 +4,7 @@ import { SavedQuestionsData, VerifyQuestions } from '../common/SavedQuestionsDat
 import { Question } from '../common/Question';
 import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FileService } from '../file.service';
-import { QuestionNode } from '../common/QuestionNode';
+import { QuestionNode, RecurseNodeChildren } from '../common/QuestionNode';
 import * as _ from "underscore";
 type SaveMode = "Monolithic" | "Flat" | "Directories" | "Custom";
 
@@ -17,13 +17,22 @@ type SaveMode = "Monolithic" | "Flat" | "Directories" | "Custom";
 export class FileModalComponent implements OnInit {
   output$: Subject<SavedQuestionsData>;
   saveData: QuestionNode;
+  flat: boolean = false;
   data: SavedQuestionsData;
   saving: boolean = false;
   saveMode: SaveMode = "Monolithic";
   saveModes = {
     "Monolithic": {
       Description: "Bunch all questions together into one gigantic file."
-
+    },
+    "Directories": {
+      Description: "Individual files and sub-folders"
+    },
+    "Flat": {
+      Description: "Give each node its own file in a single directory"
+    },
+    "Custom": {
+      Description: "Select nodes to decide between files and folders yourself"
     }
   };
   saveModeNames = _.keys(this.saveModes);
@@ -55,17 +64,24 @@ export class FileModalComponent implements OnInit {
       if (this.saveData) {
         switch (this.saveMode) {
           case "Monolithic":
+            this.saveData.Selected = true; //Select base node to indicate all nodes should be bunched together
+            //Specifying Flat or not is not necessary, since both result in a single file
             break;
           case "Flat":
+            RecurseNodeChildren(this.saveData, (qn) => { qn.Selected = !qn.Children });  //Ensure that all nodes ar selected and will get their own file.
+            this.flat = true;
             break;
           case "Directories":
+            RecurseNodeChildren(this.saveData, (qn) => { qn.Selected = !qn.Children });  //Ensure that all nodes ar selected and will get their own file.
+            this.flat = false;
             break;
           case "Custom":
+            //All settings for Custom are already set by the user.
             break;
           default:
             throw "Unknown save mode";
         }
-        this.fileService.save(this.saveData);
+        this.fileService.save(this.saveData, this.flat);
         this.activeModal.close();
       }
     } else {
