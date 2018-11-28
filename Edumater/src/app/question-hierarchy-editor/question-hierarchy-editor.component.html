@@ -5,7 +5,7 @@
       <h4 class="modal-title" id="modal-basic-title">{{modalQuestionNode.Name || "(name)"}}</h4>
     </div>
     <div class="modal-body">
-      <app-question-set-editor [questions]="modalQuestionNode.Questions"></app-question-set-editor>
+      <app-question-set-editor [questions]="modalQuestionNode.Questions" (questionAdded)="questionChange.emit()"></app-question-set-editor>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
@@ -27,10 +27,10 @@
   <ng-template #nameEditor><input type="text" [(ngModel)]="questionNode.Name" (keyup.enter)="questionNode.EditName=false" (blur)="questionNode.EditName=false" /></ng-template>
 
   <button class="float-right btn btn-sm qn-btn" (click)="addChild()">Add Child</button>
-  <button class="float-right btn btn-sm qn-btn" [ngClass]="questionNode.Expanded?'btn-secondary':'btn-outline-secondary'" (click)="expandChildren()" *ngIf="(questionNode.Children!=null)&&isChild">Children</button>
+  <button class="float-right btn btn-sm qn-btn" [ngClass]="questionNode.Expanded?'btn-secondary':'btn-outline-secondary'" (click)="expandChildren()" *ngIf="(questionNode.Children!=null)&&(questionNode.Children.length>0)&&isChild">{{questionNode.Children.length}} Children</button>
 
   <ng-container *ngIf="!selectMode">
-    <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">Questions</button>
+    <button class="float-right btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">{{questionNode.Questions.length}} Questions</button>
     <ng-template #addQuestionTemplate><button class="float-right btn btn-sm qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
   </ng-container>
   <button class="float-right btn btn-sm btn-dark qn-btn" (click)="remove()" *ngIf="isChild">Remove</button>
@@ -40,7 +40,7 @@
   <hr id="root-hr"/>
   <ul class="list-group" *ngIf="questionNode.Children" [(dragulaModel)]="questionNode.Children" dragula="QUESTION_NODES">
     <li class="list-group-item" *ngFor="let childNode of questionNode.Children; let i = index;">
-      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="questionNode.Children.splice(i,1)" (moveRequest)="moveChild(i,$event)" [selectMode]="selectMode" (selectChange)="childSelectChange($event)" [fullySelectable]="fullySelectable"></app-question-hierarchy-editor>
+      <app-question-hierarchy-editor [questionNode]="childNode" isChild="true" (removeRequest)="removeChild(i)" (moveRequest)="moveChild(i,$event)" [selectMode]="selectMode" (selectChange)="childSelectChange($event)" [fullySelectable]="fullySelectable" (questionChange)="questionChange.emit()"></app-question-hierarchy-editor>
     </li>
   </ul>
 </div>

@@ -2,11 +2,12 @@
 import { Question } from "./Question"
 import * as _ from "underscore";
 
-export class QuestionNode{
-  constructor(Name?: string, Questions?: Question[], Children?: QuestionNode[]) {
+export class QuestionNode {
+  constructor(Name?: string, Questions: Question[] = [], Children: QuestionNode[] = null) {
     this.Name = Name;
     this.Questions = Questions;
     this.Children = Children;
+    this.Selected = true;
   }
   Name: string;
   Questions: Question[];
@@ -24,5 +25,5 @@ export function RecurseNodeChildren<T>(questionNode: QuestionNode, func: ((quest
   } else {
     (func as (questionNode: QuestionNode) => void)(questionNode);
   }
-  if(questionNode.Children) questionNode.Children.forEach((qn) => RecurseNodeChildren(qn, func, state));
+  if (questionNode.Children) questionNode.Children.forEach((qn) => RecurseNodeChildren(qn, func, state));
 }

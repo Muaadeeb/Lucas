@@ -2,14 +2,12 @@ import { Question } from "./Question";
 import { SavedQuestionNode } from "./SavedQuestionNode";
 
 export class SavedQuestionsData {
-  constructor(Data?: SavedQuestionNode, CreateDate?: Date, Notes?: string) {
+  constructor(Data?: SavedQuestionNode, CreateDate?: Date) {
     this.Data = Data;
     this.CreateDate = CreateDate || new Date();
-    this.Notes = Notes;
   }
   Data: SavedQuestionNode;
   CreateDate: Date;
-  Notes: string;
 }
 
 export function VerifyQuestions(questions:Question[],onError: (error: string) => void = (error) => console.error(error)): boolean {

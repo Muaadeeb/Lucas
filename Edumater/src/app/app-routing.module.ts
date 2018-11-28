@@ -3,10 +3,14 @@ import { RouterModule, Routes } from "@angular/router";
 import { AppComponent } from './app.component';
 import { LandingComponent } from './landing/landing.component';
 import { QuestionerComponent } from './questioner/questioner.component';
+import { DataLoadedGuard } from './data-loaded.guard';
+import { QuestionManagerComponent } from './question-manager/question-manager.component';
 
 const routes: Routes = [
   { path: "", component: LandingComponent },
-  { path: "Questioner", component: QuestionerComponent }
+  //{ path: "Questioner", component: , canActivate: [DataLoadedGuard] },
+  { path: "Questions", component: QuestionManagerComponent },
+  { path: "Questions/Ask", component: QuestionerComponent, canActivate: [DataLoadedGuard]}
 ]
 
 @NgModule({

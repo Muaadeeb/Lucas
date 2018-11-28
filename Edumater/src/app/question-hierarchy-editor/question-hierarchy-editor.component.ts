@@ -18,6 +18,7 @@ export class QuestionHierarchyEditorComponent implements OnInit, OnChanges {
   @Input() isChild: boolean = false;
   @Output() removeRequest = new EventEmitter<QuestionNode>();
   @Output("selectChange") selectChangeEvent = new EventEmitter<boolean>();
+  @Output() questionChange = new EventEmitter<void>();
   @ViewChild("questionModal") questionModal;
   @ViewChild("nameEditor") nameEditor: HTMLElement;
   modalQuestionNode: QuestionNode;
@@ -40,8 +41,10 @@ export class QuestionHierarchyEditorComponent implements OnInit, OnChanges {
   }
   addQuestion() {
     if (!this.questionNode.Questions) this.questionNode.Questions = [];
-    this.questionNode.Questions.push(new Question());
+    const question = new Question();
+    this.questionNode.Questions.push(question);
     this.openQuestionModal(this.questionNode);
+    this.questionChange.emit();
   }
   expandChildren() {
     this.questionNode.Expanded = !this.questionNode.Expanded
@@ -63,6 +66,10 @@ export class QuestionHierarchyEditorComponent implements OnInit, OnChanges {
   }
   remove() {
     this.removeRequest.emit(this.questionNode);
+  }
+  removeChild(index: number) {
+    this.questionNode.Children.splice(index, 1);
+    this.questionChange.emit();
   }
   childSelectChange(checked: boolean) {
     if (this.fullySelectable==true) { //This is actually necessary.   I have no idea, do not try to ask.

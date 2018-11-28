@@ -1,11 +1,11 @@
 
 import { Injectable, PACKAGE_ROOT_URL } from '@angular/core';
 import { QuestionNode, RecurseNodeChildren } from './common/QuestionNode';
-import { Observable, throwError, Subject } from 'rxjs';
+import { Observable, throwError, Subject, of, forkJoin } from 'rxjs';
 import * as _ from "underscore";
 import { SavedQuestionsData } from './common/SavedQuestionsData';
 import { saveAs } from "file-saver";
-import { ToSavedQuestionNode } from './common/SavedQuestionNode';
+import { ToSavedQuestionNode, SavedQuestionNode } from './common/SavedQuestionNode';
 //import * as JSZip from "jszip";
 declare var JSZip: any;
 
@@ -13,13 +13,52 @@ declare var JSZip: any;
   providedIn: 'root'
 })
 export class FileService {
-  private fileStream: Subject<LoadedSavedQuestionsData>;
+  private fileStream: Subject<SavedQuestionsData>;
   constructor() { }
-  open(files: FileList): Observable<LoadedSavedQuestionsData> {
+  private setValueAtPath(data: SavedQuestionNode, path: string[], value: SavedQuestionNode) {
+    let child = data;
+    let children: { [name: string]: SavedQuestionNode } = {};
+    for (var i = 0; i < path.length; i++) {
+      var name = path[i];
+      if (i === 0 && name === data.Name) {
+        continue; //Skip this iteration if the path requests the root node
+      }
+      children = _.object(_.map(child.Children, (node) => node.Name), child.Children);
+      if (name in children) {
+        child = children[name];
+      } else {
+        let newchild = new SavedQuestionNode(name, null, []);
+        child.Children.push(newchild);
+        child = newchild;
+      }
+    }
+    child.Questions = value.Questions;
+  }
+  open(files: FileList, onFileLoad?: (progressCurrent: number, progressTotal: number, filedata: SavedQuestionsData) => void): Observable<SavedQuestionsData> {
     if (!files) {
       return throwError("No files selected");
     }
-    this.fileStream = new Subject<LoadedSavedQuestionsData>();
+    this.fileStream = new Subject<SavedQuestionsData>();
+    let rootNodeName = files.length == 1 ? files[0].name.replace(/\.[^/.]+$/, "") : "Root";
+    let output = new SavedQuestionsData(new SavedQuestionNode(rootNodeName, null, []));
+    let completed: _.Dictionary<boolean> = _.reduce(files, (acc, cur) => ({ ...acc, [cur.name]: false }), {});
+    let complete = (file: File, result: SavedQuestionsData) => {
+      if (files.length === 1) output.Data = result.Data;
+      else output.Data.Children.push(result.Data);
+      completed[file.name] = true;
+      if (output.CreateDate == null || output.CreateDate < result.CreateDate) {
+        output.CreateDate = result.CreateDate;
+      }
+      let values = _.values(completed);
+      let counts = _.countBy(values);
+      if (onFileLoad) onFileLoad(counts["true"], values.length, result);
+      console.log(counts);
+      if (counts["true"] === values.length) {
+        this.fileStream.next(output);
+        this.fileStream.complete();
+      }
+    }
+
     for (let i = 0; i < files.length; i++) {
       let file = files[i];
       if (file) {
@@ -28,20 +67,38 @@ export class FileService {
         switch (fileType.toLowerCase()) {
           case "zip":
             fr.onload = () => {
+              let result: SavedQuestionsData = new SavedQuestionsData(new SavedQuestionNode(file.name.replace(/\.[^/.]+$/, ""), [], []), file.lastModifiedDate);
               var zipReader = new JSZip();
               try {
+                let totalObjs = 0;
+                let completedObjs = 0;
+                let foreachComplete = false;
                 // more files !
                 zipReader.loadAsync(fr.result)
-                  .then(this.handleZipLoad(this))
+                  .then((zip) => {
+                    zip.forEach((relativePath, fileobj) => {
+                      totalObjs++;
+                      this.handleZipObject(fileobj, this).subscribe((res) => {
+                        if (res)
+                          this.setValueAtPath(result.Data, res.Path, res.Data.Data);
+                        completedObjs++;
+                        if (totalObjs == completedObjs && foreachComplete) {
+                          complete(file, result);
+                        }
+                      });
+                    });
+                    foreachComplete = true;
+                  })
               } catch (e) {
                 return throwError(e);
               }
             }
             fr.readAsArrayBuffer(file);
+
             break;
           case "json":
             fr.onload = () => {
-              this.handleFile(<string>fr.result, []);
+              complete(file, this.handleFile(<string>fr.result, []).Data);
             }
             fr.readAsText(file);
             break;
@@ -55,19 +112,19 @@ export class FileService {
     }
     return this.fileStream.asObservable();
   }
-  handleZipLoad(context: FileService): (zip: /*JSZip*/any) => void {
-    return (zip: any) => {
-      zip.forEach((relativePath, file) => {
-        context.handleZipObject(file, context);
-      });
-    };
-  }
-  handleZipObject(zipObject: any, context: FileService) {
+  handleZipObject(zipObject: any, context: FileService): Observable<LoadedSavedQuestionsData> {
     if (!zipObject.dir) {
-      zipObject.async("string").then((content) => context.handleFile(content, context.getNamePath(zipObject.name)));
+      return new Observable((subscriber) => {
+        zipObject.async("string").then((content) => {
+          subscriber.next(context.handleFile(content, context.getNamePath(zipObject.name)));
+          subscriber.complete();
+        });
+      })
+    } else {
+      return of(null);
     }
   }
-  handleFile(content: string, path: string[]) {
+  handleFile(content: string, path: string[]): LoadedSavedQuestionsData {
     let data: SavedQuestionsData = null;
     if (content == "") {
       this.fileStream.error("Empty File at:  " + path.join("/"));
@@ -79,7 +136,7 @@ export class FileService {
       this.fileStream.error(`Error parsing data at:  ${path.join("/")} (${e})`);
       return;
     }
-    this.fileStream.next(new LoadedSavedQuestionsData(path, data));
+    return new LoadedSavedQuestionsData(path, data);
   }
 
   //onUpdate is only called when the style is not Monolithic (that is, the root question node is not selected)
@@ -125,12 +182,13 @@ export class FileService {
       });
     }
   }
-  DataFromSelection(questionNode: QuestionNode): Observable<{qn: SavedQuestionsData, path: string[]}> {
+  DataFromSelection(questionNode: QuestionNode): Observable<{ qn: SavedQuestionsData, path: string[] }> {
     return new Observable((observer) => {
       let recurse = (qn: QuestionNode, path: string[]) => {
         let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
         //zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
         if (qn.Selected) {
+          path.pop();
           observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: path });
         }
         else {

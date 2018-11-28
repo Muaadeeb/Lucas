@@ -6,6 +6,7 @@ import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FileService } from '../file.service';
 import { QuestionNode, RecurseNodeChildren } from '../common/QuestionNode';
 import * as _ from "underscore";
+import { SavedQuestionNode } from '../common/SavedQuestionNode';
 type SaveMode = "Monolithic" | "Flat" | "Directories" | "Custom";
 
 @Component({
@@ -18,7 +19,8 @@ export class FileModalComponent implements OnInit {
   output$: Subject<SavedQuestionsData>;
   saveData: QuestionNode;
   flat: boolean = false;
-  data: SavedQuestionsData;
+  loadData: SavedQuestionsData;
+  totalLoadedQuestions: number;
   saving: boolean = false;
   saveMode: SaveMode = "Monolithic";
   saveModes = {
@@ -42,7 +44,7 @@ export class FileModalComponent implements OnInit {
   constructor(private fileService: FileService,
     private modalService: NgbModal) {
     this.saveData = new QuestionNode();
-    this.data = new SavedQuestionsData();
+    this.loadData = null;
   }
 
   ngOnInit() {
@@ -50,9 +52,14 @@ export class FileModalComponent implements OnInit {
   submit() {
     let files = (<HTMLInputElement>document.getElementById("OpenQuestionFile")).files;
     this.fileService.open(files).
-      subscribe((qn) => {
-        console.log(qn);
-        this.data = qn.Data;
+      subscribe((questionNode) => {
+        this.loadData = questionNode;
+        console.log(questionNode);
+        let recurseCount = (qn: SavedQuestionNode) => {
+          let childCounts:number[] = _.map(qn.Children, (child) => recurseCount(child));
+          return _.reduce(childCounts, (memo,value) => memo+value,qn.Questions==null?0:qn.Questions.length);
+        }
+        this.totalLoadedQuestions = recurseCount(this.loadData.Data);
       },
         (error) => {
           console.log(error);
@@ -85,10 +92,10 @@ export class FileModalComponent implements OnInit {
         this.activeModal.close();
       }
     } else {
-      if (this.data) {
+      if (this.loadData) {
         this.activeModal.close();
         this.activeModal = null;
-        this.output$.next(this.data);
+        this.output$.next(this.loadData);
       }
     }
   }
@@ -97,7 +104,8 @@ export class FileModalComponent implements OnInit {
     this.activeModal = null;
     this.error = "";
     this.saveMode = "Monolithic";
-    if(!this.saving)this.output$.error("Question Modal was closed before questions could be loaded.");
+    this.loadData = null;
+    if (!this.saving) this.output$.error("Question Modal was closed before questions could be loaded.");
   }
 
   public RetrieveQuestions(): Observable<SavedQuestionsData> {
@@ -108,7 +116,7 @@ export class FileModalComponent implements OnInit {
     return this.output$;
   }
   public SaveQuestions(questionNode: QuestionNode) {
-    this.data = null;
+    this.loadData = null;
     this.saveData = questionNode;
     this.saving = true;
     this.activeModal = this.modalService.open(this.content, { size: "lg" });

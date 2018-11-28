@@ -15,6 +15,7 @@ import { QuestionSetEditorComponent } from './question-set-editor/question-set-e
 import { QuestionHierarchyEditorComponent } from './question-hierarchy-editor/question-hierarchy-editor.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { QuestionManagerComponent } from './question-manager/question-manager.component';
 
 @NgModule({
   imports: [
@@ -34,7 +35,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     LandingComponent,
     FileModalComponent,
     QuestionSetEditorComponent,
-    QuestionHierarchyEditorComponent
+    QuestionHierarchyEditorComponent,
+    QuestionManagerComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

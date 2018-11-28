@@ -13,6 +13,7 @@ import { QuestionNode } from './common/QuestionNode';
 export class QuestionService {
   public RootNode: QuestionNode;
   private ActiveQuestions: Question[];
+  public log() { console.log(this.ActiveQuestions) }
   public CurrentQuestion: Question;
   public constructor() {
     this.RootNode = new QuestionNode("Question-Root", [], []);
@@ -27,13 +28,18 @@ export class QuestionService {
     }
   }
 
-  public UpdateQuestionSelection() {
+  public QuestionsLoaded(): boolean {
+    return this.ActiveQuestions.length > 0;
+  }
+
+  public UpdateQuestionSelection(useSelection = true) {
     let questionArrays = new Array<Question[]>();
     //No, I'm not planning on kidnapping anyone
     let grabChildren = (questionNode: QuestionNode) => {
-      if (questionNode.Selected)
+      if ((questionNode.Selected || !useSelection) && questionNode.Questions!=null)
         questionArrays.push(questionNode.Questions);
-      questionNode.Children.forEach(c => grabChildren(c));
+      if(questionNode.Children)
+        questionNode.Children.forEach(c => grabChildren(c));
     }
     grabChildren(this.RootNode);
     this.ActiveQuestions = _.flatten(questionArrays);

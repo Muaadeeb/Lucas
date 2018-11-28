@@ -12,7 +12,6 @@ import { ToQuestionNode } from '../common/SavedQuestionNode';
   styleUrls: ['./questioner.component.css']
 })
 export class QuestionerComponent implements OnInit {
-  @ViewChild("questionFileModal") questionFileModal: FileModalComponent;
   answer: HTMLInputElement;
   verdict: Verdict;
   dismissedVerdict: boolean = true;
@@ -22,11 +21,7 @@ export class QuestionerComponent implements OnInit {
 
   ngOnInit() {
   }
-  openQuestions() {
-    this.questionFileModal.RetrieveQuestions().subscribe((sqd) => {
-      this.qs.AddNode(ToQuestionNode(sqd.Data));
-    });
-  }
+
   askNewQuestion() {
     this.qs.AskNewQuestion().subscribe(() => { if (this.answer!=null) this.answer.focus() });
   }

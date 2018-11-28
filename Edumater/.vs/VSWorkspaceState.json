@@ -3,13 +3,12 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\common",
     "\\src\\app\\file-modal",
     "\\src\\app\\landing",
     "\\src\\app\\question-hierarchy-editor",
     "\\src\\app\\questioner",
     "\\src\\assets"
   ],
-  "SelectedNode": "\\src\\app\\file-modal\\file-modal.component.ts",
+  "SelectedNode": "\\src\\app\\file-modal\\file-modal.component.html",
   "PreviewInSolutionExplorer": false
 }
