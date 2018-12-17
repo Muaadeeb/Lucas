@@ -43,8 +43,7 @@ export class FileModalComponent implements OnInit {
   activeModal: NgbModalRef;
   constructor(private fileService: FileService,
     private modalService: NgbModal) {
-    this.saveData = new QuestionNode();
-    this.loadData = null;
+    this.reset();
   }
 
   ngOnInit() {
@@ -88,37 +87,38 @@ export class FileModalComponent implements OnInit {
           default:
             throw "Unknown save mode";
         }
-        this.fileService.save(this.saveData, this.flat);
-        this.activeModal.close();
+        this.fileService.save(this.saveData, this.flat);  
       }
     } else {
       if (this.loadData) {
-        this.activeModal.close();
-        this.activeModal = null;
         this.output$.next(this.loadData);
       }
     }
+    this.activeModal.close();
+    this.reset();
   }
   questionsClosed() {
     this.activeModal.dismiss();
-    this.activeModal = null;
-    this.error = "";
-    this.saveMode = "Monolithic";
-    this.loadData = null;
+    this.reset();
     if (!this.saving) this.output$.error("Question Modal was closed before questions could be loaded.");
   }
 
   public RetrieveQuestions(): Observable<SavedQuestionsData> {
-    this.output$ = new Subject<SavedQuestionsData>();
-    this.saving = false;
-    this.saveData = null;
     this.activeModal = this.modalService.open(this.content, { size: "lg" });
     return this.output$;
   }
   public SaveQuestions(questionNode: QuestionNode) {
-    this.loadData = null;
     this.saveData = questionNode;
     this.saving = true;
     this.activeModal = this.modalService.open(this.content, { size: "lg" });
+  }
+  reset() {
+    this.activeModal = null;
+    this.error = "";
+    this.saveMode = "Monolithic";
+    this.loadData = null;
+    this.saveData = null;
+    this.saving = false;
+    this.output$ = new Subject<SavedQuestionsData>();
   }
 }

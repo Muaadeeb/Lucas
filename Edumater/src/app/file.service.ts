@@ -80,7 +80,7 @@ export class FileService {
                       totalObjs++;
                       this.handleZipObject(fileobj, this).subscribe((res) => {
                         if (res)
-                          this.setValueAtPath(result.Data, res.Path, res.Data.Data);
+                          this.setValueAtPath(result.Data, res.Path.slice(1), res.Data.Data); //Skip the first item in the path
                         completedObjs++;
                         if (totalObjs == completedObjs && foreachComplete) {
                           complete(file, result);
@@ -152,25 +152,10 @@ export class FileService {
     } else {
       var zip = new JSZip();
       if (flat) { //Single-directory dot-denoted hierarchy reprentation ("I/Like/Movies.json" -> "I.Like.Movies.json")
-        //RecurseNodeChildren<string[]>(questionNode, (qn, path) => {
-        //  zip.file(this.createFilename(path, qn.Name, "."), "");
-        //  path.push(qn.Name);
-        //  return path;
-        //}, []);
         this.DataFromSelection(questionNode).subscribe((data) => {
           zip.file(this.createFilename(data.path, data.qn.Data.Name, "."), JSON.stringify(data.qn));
         })
       } else { //Directories!!!
-        //let recurse = (qn: QuestionNode, path: string[]) => {
-        //  let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
-        //  zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
-        //  if (qn.Children) {
-        //    path = _.clone(path);
-        //    path.push(qn.Name);
-        //    qn.Children.forEach((qn) => recurse(qn, path));
-        //  }
-        //}
-        //recurse(questionNode, []);
         this.DataFromSelection(questionNode).subscribe((data) => {
           zip.file(this.createFilename(data.path, data.qn.Data.Name, "/"), JSON.stringify(data.qn));
         })
@@ -184,18 +169,18 @@ export class FileService {
   }
   DataFromSelection(questionNode: QuestionNode): Observable<{ qn: SavedQuestionsData, path: string[] }> {
     return new Observable((observer) => {
-      let recurse = (qn: QuestionNode, path: string[]) => {
+      let recurse = (qn: QuestionNode, oldPath: string[]) => {
+        //The entire node if this node has no children or is selected, the node's questions alone (minus the children) otherwise
         let data: QuestionNode = (qn.Children == null || qn.Selected) ? qn : _.omit(qn, "Children");
-        //zip.file(this.createFilename(path, qn.Name, "/"), ToSavedQuestionNode(data));
-        if (qn.Selected) {
-          path.pop();
-          observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: path });
+        let newPath = _.clone(oldPath);
+        newPath.push(qn.Name);
+        if (qn.Selected || qn.Questions) {
+          observer.next({ qn: new SavedQuestionsData(ToSavedQuestionNode(data)), path: oldPath });
+
         }
-        else {
+        if(!qn.Selected) {
           if (qn.Children) {
-            path = _.clone(path);
-            path.push(qn.Name);
-            qn.Children.forEach((qn) => recurse(qn, path));
+            qn.Children.forEach((qn) => recurse(qn, newPath));
           }
         }
       }
@@ -203,7 +188,7 @@ export class FileService {
     })
   }
   createFilename(path: string[], filename: string, seperator: string) {
-    return `${path.join(seperator)}${seperator}${filename}.json`;
+    return `${_.union(path,[filename]).join(seperator)}.json`;
   }
   getNamePath(name: string): string[] {
     if (name.toLowerCase().endsWith(".json")) {

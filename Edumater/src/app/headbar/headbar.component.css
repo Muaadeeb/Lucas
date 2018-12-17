@@ -1,0 +1,27 @@
+.bg-custom-purplish{
+  background: #723cb7 !important
+}
+
+.navbar-custom-wide {
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#qcount-display {
+  background-color: purple;
+  padding: 0.2rem 0.33rem;
+  border: 1.5px solid #924895;
+  border-radius: 5px;
+}
+
+#qcount-lead {
+  color: #eeeeee
+}
+
+#qcount-activequestions {
+  color: #5af27d;
+}
+
+#qcount-allquestions{
+  color:white;
+}

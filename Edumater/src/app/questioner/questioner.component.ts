@@ -20,6 +20,7 @@ export class QuestionerComponent implements OnInit {
     private qs: QuestionService) { }
 
   ngOnInit() {
+    this.askNewQuestion();
   }
 
   askNewQuestion() {

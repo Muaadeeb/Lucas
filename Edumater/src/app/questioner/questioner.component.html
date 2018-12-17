@@ -1,7 +1,7 @@
 <div class="row" id="Question" *ngIf="qs.CurrentQuestion">
   <app-question-display style="width:100%;" [question]="qs.CurrentQuestion"></app-question-display>
   <div class="col-12">
-    <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" #Answer (keyup.enter)="submitAnswer(Answer)"/>
+    <input type="text" placeholder="ANSWER IN THIS BOX.  IT'S NOT THAT COMPLICATED" class="form-control" #Answer (keyup.enter)="submitAnswer(Answer)" />
   </div>
   <div class="col-md-offset-2 col-md-10">
     <input type="submit" value="I'm Right, of course" class="btn btn-large" id="SubmitarizeIt" (click)="submitAnswer(Answer)" *ngIf="dismissedVerdict" />
@@ -15,10 +15,10 @@
     <h3>Correct Answer:</h3>
     <p id="CorrectAnswerText">{{verdict.CorrectAnswer}}</p>
   </div>
-  <div><input type="button" value="{{verdict.ConceedPrompt}}" class="btn btn-large" [ngClass]="verdict.WasCorrect?'text-success':'text-danger'" (click)="dismissedVerdict = true;askNewQuestion();"/></div>
+  <div><input type="button" value="{{verdict.ConceedPrompt}}" class="btn btn-large" [ngClass]="verdict.WasCorrect?'text-success':'text-danger'" (click)="dismissedVerdict = true;askNewQuestion();" /></div>
 </div>
 
 
-<p class="text-danger"*ngIf="!qs.CurrentQuestion; else Save">No Questions Loaded</p>
-<ng-template #Save><button class="btn btn-success" (click)="saveQuestions()">Save Questions</button></ng-template>
+<p class="text-danger" *ngIf="!qs.CurrentQuestion">No Current Question <button class="btn btn-primary" (click)="askNewQuestion()">Ask New Question</button></p>
+<p class="text-danger" *ngIf="!qs.QuestionsLoaded(); else Manager">No Active Questions <ng-container *ngTemplateOutlet="Manager"></ng-container></p>
 

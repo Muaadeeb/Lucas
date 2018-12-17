@@ -27,3 +27,7 @@ export function RecurseNodeChildren<T>(questionNode: QuestionNode, func: ((quest
   }
   if (questionNode.Children) questionNode.Children.forEach((qn) => RecurseNodeChildren(qn, func, state));
 }
+
+export function cloneNode(questionNode: QuestionNode): QuestionNode {
+  return new QuestionNode(questionNode.Name, questionNode.Questions, _.map(questionNode.Children,(n) => cloneNode(n)));
+}

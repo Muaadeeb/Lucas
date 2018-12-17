@@ -3,17 +3,18 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="lead">
+    <h3 class="lead float-left">
       Questions
-      <span class="badge badge-dark float-right">{{qs.ActiveQuestions.length}} Q's</span>
-      <button (click)="log()">AQ</button>
+      <span class="badge badge-dark">{{qs.AllQuestions.length}} Questions's</span>
+      <span class="badge badge-success">{{qs.ActiveQuestions.length}} Active</span>
     </h3>
+    <button class="float-right btn btn-secondary btn-sm" (click)="save()">Save</button>
   </div>
   <div class="card-body">
-    <div class="alert alert-primary">
-      {{qs.QuestionsLoaded()? "Guess what?  There are questions loaded.":"You have no questions!"}}
+    <div *ngIf="!qs.QuestionsLoaded()" class="alert alert-warning">
+      You have no selected questions!
     </div>
-    <app-question-hierarchy-editor [questionNode]="qs.RootNode" (questionChange)="hierarchyQuestionAdded()"></app-question-hierarchy-editor>
+    <app-question-hierarchy-editor [questionNode]="qs.RootNode" (questionChange)="hierarchyQuestionAdded()" (selectChange)="selectionChanged()" selectMode="true" questionMode="true" fullySelectable="false"></app-question-hierarchy-editor>
   </div>
 
   <div class="card-footer">

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { QuestionService } from '../question.service';
 
 @Component({
   selector: 'app-headbar',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeadbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private qs: QuestionService) { }
 
   ngOnInit() {
   }

@@ -1,1 +1,22 @@
-<p width="100%" style="border-top:2px solid black; border-bottom:2px solid black; text-align:center;">INSERT TITLE HERE</p>
+<nav class="navbar navbar-expand-md navbar-dark bg-custom-purplish navbar-custom-wide">
+  <a class="navbar-brand" routerLink="/">Edumater</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/Questions">Question Manager</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/Questions/Ask">Questioner</a>
+      </li>
+    </ul>
+    <span class="navbar-text" id="qcount-display">
+      <span id="qcount-lead">Questions: </span> <span id="qcount-activequestions">{{qs.ActiveQuestions.length}}</span>/<span id="qcount-allquestions">{{qs.AllQuestions.length}}</span>
+    </span>
+  </div>
+</nav>

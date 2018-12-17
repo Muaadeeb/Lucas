@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { FileModalComponent } from '../file-modal/file-modal.component';
 import { ToQuestionNode } from '../common/SavedQuestionNode';
-import { QuestionNode } from '../common/QuestionNode';
+import { QuestionNode, cloneNode } from '../common/QuestionNode';
+import { FileService } from '../file.service';
+import * as _ from "underscore";
 
 @Component({
   selector: 'app-question-manager',
@@ -17,6 +19,7 @@ export class QuestionManagerComponent implements OnInit {
 
   constructor(
     private qs: QuestionService,
+    private fs: FileService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -46,9 +49,12 @@ export class QuestionManagerComponent implements OnInit {
   }
 
   hierarchyQuestionAdded() {
-    this.qs.UpdateQuestionSelection(false);
+    this.qs.UpdateQuestionSelection();
   }
-  log() {
-    this.qs.log();
+  selectionChanged() {
+    this.qs.UpdateQuestionSelection();
+  }
+  save() {
+    this.fileModal.SaveQuestions(cloneNode(this.qs.RootNode));
   }
 }

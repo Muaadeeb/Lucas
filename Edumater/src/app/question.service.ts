@@ -13,11 +13,12 @@ import { QuestionNode } from './common/QuestionNode';
 export class QuestionService {
   public RootNode: QuestionNode;
   private ActiveQuestions: Question[];
-  public log() { console.log(this.ActiveQuestions) }
+  private AllQuestions: Question[];
   public CurrentQuestion: Question;
   public constructor() {
-    this.RootNode = new QuestionNode("Question-Root", [], []);
+    this.RootNode = new QuestionNode("New Project", [], []);
     this.ActiveQuestions = [];
+    this.AllQuestions = [];
   }
 
   public AddNode(questionNode: QuestionNode) {
@@ -32,32 +33,39 @@ export class QuestionService {
     return this.ActiveQuestions.length > 0;
   }
 
-  public UpdateQuestionSelection(useSelection = true) {
+  public UpdateQuestionSelection() {
     let questionArrays = new Array<Question[]>();
+    let selected = [];
     //No, I'm not planning on kidnapping anyone
     let grabChildren = (questionNode: QuestionNode) => {
-      if ((questionNode.Selected || !useSelection) && questionNode.Questions!=null)
+      if (questionNode.Questions != null) {
         questionArrays.push(questionNode.Questions);
-      if(questionNode.Children)
+        selected.push(questionNode.Selected);
+      }
+      if (questionNode.Children)
         questionNode.Children.forEach(c => grabChildren(c));
     }
     grabChildren(this.RootNode);
-    this.ActiveQuestions = _.flatten(questionArrays);
+    this.AllQuestions = _.flatten(questionArrays);
+    this.ActiveQuestions = _.flatten(_.filter(questionArrays, (qa, index) => selected[index]));
   }
 
 
-  //public OnQuestionVerified: (question: Question, WasCorrect: boolean) => void;
   public OnUpdateQuestion: (question: Question) => void = () => { };
 
   private GetNextQuestion(): Observable<Question> {
+    if (!this.QuestionsLoaded()) {
+      return throwError("There are no questions loaded!");
+    }
     return of(Utils.RandomElement(this.ActiveQuestions));
   }
   public AskNewQuestion(): Observable<Question> {
     return this.GetNextQuestion().pipe(tap((question) => {
       this.CurrentQuestion = question;
+      console.log(question);
     }, (error) => this.onError(error)));
   }
-  onError: (error) => void = (error) => console.error(error);
+  onError: (error) => void = (error) => { throw error };
   public VerifyAnswer(Answer: string): boolean {
     if (!this.CurrentQuestion) {
       throw new Error("No question set for CurrentQuestion on verification.  Odds are you have no loaded questions.");
