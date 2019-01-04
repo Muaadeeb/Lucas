@@ -16,6 +16,11 @@ import { QuestionHierarchyEditorComponent } from './question-hierarchy-editor/qu
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { QuestionManagerComponent } from './question-manager/question-manager.component';
+import { ScoresheetEditorComponent } from './scoresheet-editor/scoresheet-editor.component';
+import { ScoresheetTunerComponent } from './scoresheet-tuner/scoresheet-tuner.component';
+import { QuestionSelectorModalComponent } from './question-selector-modal/question-selector-modal.component';
+import { ScoreprocessorEditorComponent } from './scoreprocessor-editor/scoreprocessor-editor.component';
+import { ScoresheetManagerComponent } from './scoresheet-manager/scoresheet-manager.component';
 
 @NgModule({
   imports: [
@@ -36,9 +41,15 @@ import { QuestionManagerComponent } from './question-manager/question-manager.co
     FileModalComponent,
     QuestionSetEditorComponent,
     QuestionHierarchyEditorComponent,
-    QuestionManagerComponent
+    QuestionManagerComponent,
+    ScoresheetEditorComponent,
+    ScoresheetTunerComponent,
+    QuestionSelectorModalComponent,
+    ScoreprocessorEditorComponent,
+    ScoresheetManagerComponent
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [QuestionSelectorModalComponent]
 })
 export class AppModule { }

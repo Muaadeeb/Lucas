@@ -6,19 +6,29 @@ import { Utils } from './common/Utils';
 import { Question } from './common/Question';
 import { SavedQuestionsData, VerifyQuestions } from './common/SavedQuestionsData';
 import { QuestionNode } from './common/QuestionNode';
+import { ScoreService } from './score.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuestionService {
-  public RootNode: QuestionNode;
-  private ActiveQuestions: Question[];
-  private AllQuestions: Question[];
+  private _RootNode: QuestionNode;
+    public get RootNode(): QuestionNode {
+        return this._RootNode;
+    }
+    public set RootNode(value: QuestionNode) {
+        this._RootNode = value;
+    }
+  public ActiveQuestions: Question[];
+  private ActiveQuestionScores: number[];
+  public AllQuestions: Question[];
   public CurrentQuestion: Question;
-  public constructor() {
-    this.RootNode = new QuestionNode("New Project", [], []);
+  public constructor(private scoreService: ScoreService) {
+    const stored = JSON.parse(sessionStorage.getItem("RootNode"));
+    this.RootNode = stored || new QuestionNode("New Project", [], []);
     this.ActiveQuestions = [];
     this.AllQuestions = [];
+    this.UpdateQuestionSelection();
   }
 
   public AddNode(questionNode: QuestionNode) {
@@ -48,21 +58,38 @@ export class QuestionService {
     grabChildren(this.RootNode);
     this.AllQuestions = _.flatten(questionArrays);
     this.ActiveQuestions = _.flatten(_.filter(questionArrays, (qa, index) => selected[index]));
+    this.ActiveQuestionScores = [];
+    sessionStorage.setItem("RootNode", JSON.stringify(this.RootNode));
   }
 
-
   public OnUpdateQuestion: (question: Question) => void = () => { };
+
+  private ScoreQuestion(question: Question): number {
+    return this.scoreService.ScoreQuestion(question);
+  }
+
+  private ScoreActiveQuestions() {
+    this.ActiveQuestions.forEach((question, index) => {
+      this.ActiveQuestionScores[index] = this.ScoreQuestion(question);
+    });
+  }
 
   private GetNextQuestion(): Observable<Question> {
     if (!this.QuestionsLoaded()) {
       return throwError("There are no questions loaded!");
     }
-    return of(Utils.RandomElement(this.ActiveQuestions));
+    return new Observable((sub) => {
+      if (this.ActiveQuestionScores == null || this.ActiveQuestionScores.length != this.ActiveQuestions.length) {
+        this.ScoreActiveQuestions();
+      }
+      sub.next(this.ActiveQuestions[
+        _.indexOf(this.ActiveQuestionScores, _.max(this.ActiveQuestionScores))
+      ]);
+    })
   }
   public AskNewQuestion(): Observable<Question> {
     return this.GetNextQuestion().pipe(tap((question) => {
       this.CurrentQuestion = question;
-      console.log(question);
     }, (error) => this.onError(error)));
   }
   onError: (error) => void = (error) => { throw error };
@@ -86,6 +113,10 @@ export class QuestionService {
             Answer.toLowerCase()));
     }
     if (correct) { this.CurrentQuestion.AnsweredCorrectly++; } else { this.CurrentQuestion.AnsweredIncorrectly++; }
+    let currentIndex = this.ActiveQuestions.findIndex((value, index, obj) => {
+      return value == this.CurrentQuestion;
+    });
+    this.ActiveQuestionScores[currentIndex] = this.ScoreQuestion(this.CurrentQuestion); //Rescore the current question with new answer history.
     return correct;
   }
 }

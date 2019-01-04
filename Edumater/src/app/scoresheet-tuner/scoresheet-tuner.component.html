@@ -1,0 +1,48 @@
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        Current Scoresheet
+        <button class="float-right btn btn-sm btn-default" [class.disabled]="!scoresheetChanged" (click)="applyScoresheet()">Apply</button>
+      </div>
+      <div class="card-body">
+        <app-scoresheet-editor [scoresheet]="scoresheet" (change)="onScoresheetChange()"></app-scoresheet-editor>
+      </div>
+    </div>
+    <div class="card-footer">
+
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card mt-3 mt-lg-0">
+      <div class="card-header">
+        Scoresheet-Tester-O-Matic
+        <button class="btn btn-sm float-right" [ngClass]="testQuestion?'btn-default':'btn-success'" (click)="select()">Select {{testQuestion?"New ":""}}Question</button>
+      </div>
+      <div class="card-body" *ngIf="testQuestion">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Input</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let datum of scoreResult">
+              <th>{{datum[0]}}</th>
+              <td>{{datum[1].input}}</td>
+              <td>{{datum[1].score}}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr id="totals">
+              <th id="text-right" colspan="2">Total :</th>
+              <td>{{score}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

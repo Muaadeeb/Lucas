@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h4 class="modal-title">Hi there!</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Exit click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <input [(ngModel)]="searchTerm" type="text" placeholder="Search Questions" class="form-control col-12" (keyup)="updateSearch()" />
+  <table id="search-output" class="table">
+    <thead>
+      <tr>
+        <th scope="col">Question Text</th>
+        <th scope="col">Select</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let question of filteredQuestions">
+        <td>{{question.QuestionText.length>50 ? (question.QuestionText | slice:0:50)+'...' : (question.QuestionText)}}</td>
+        <td><button class="btn btn-primary btn-sm" (click)="select(question)">Select</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.dismiss()">Cancel</button>
+</div>

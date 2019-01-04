@@ -53,7 +53,6 @@ export class FileModalComponent implements OnInit {
     this.fileService.open(files).
       subscribe((questionNode) => {
         this.loadData = questionNode;
-        console.log(questionNode);
         let recurseCount = (qn: SavedQuestionNode) => {
           let childCounts:number[] = _.map(qn.Children, (child) => recurseCount(child));
           return _.reduce(childCounts, (memo,value) => memo+value,qn.Questions==null?0:qn.Questions.length);

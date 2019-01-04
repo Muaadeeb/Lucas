@@ -1,0 +1,18 @@
+<div>
+  <div class="form-group">
+    <label for="CorrectProcessor">Answered Correctly:</label>
+    <app-scoreprocessor-editor [scoreProcessor]="scoresheet.Correct" (change)="onChange()" id="CorrectProcessor"></app-scoreprocessor-editor>
+  </div>
+  <div class="form-group">
+    <label for="IncorrectProcessor">Answered Incorrectly:</label>
+    <app-scoreprocessor-editor [scoreProcessor]="scoresheet.Incorrect" (change)="onChange()" id="IncorrectProcessor"></app-scoreprocessor-editor>
+  </div>
+  <div class="form-group">
+    <label for="TimespanProcessor">Time Since Last Asked (Minutes):</label>
+    <app-scoreprocessor-editor [scoreProcessor]="scoresheet.Timespan" (change)="onChange()" id="TimespanProcessor"></app-scoreprocessor-editor>
+  </div>
+  <div class="form-group">
+    <label for="PriorityProcessor">Question Priority:</label>
+    <app-scoreprocessor-editor [scoreProcessor]="scoresheet.Priority" (change)="onChange()" id="PriorityProcessor"></app-scoreprocessor-editor>
+  </div>
+</div>

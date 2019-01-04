@@ -1,0 +1,43 @@
+
+<div class="row">
+  <div class="col-12 p-4" id="sm-preview">
+    <p class="lead">Current Scoresheet:  {{scoreService.scoresheetName}}</p>
+    <app-scoresheet-editor [scoresheet]="scoreService.CurrentScoresheet"></app-scoresheet-editor>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner">
+      <p>
+        <i class="fa fa-upload"></i>
+        <br />
+        Load
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner">
+      <p>
+        <i class="fa fa-download"></i>
+        <br />
+        Save
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/Scoresheets/Tune">
+      <p>
+        <i class="fa fa-flask"></i>
+        <br />
+        Tune
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/Questions/Ask">
+      <p>
+        <i class="fa fa-arrow-right"></i>
+        <br />
+        Questioner
+      </p>
+    </div>
+  </div>
+</div>

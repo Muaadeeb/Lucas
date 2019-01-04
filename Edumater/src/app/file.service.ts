@@ -52,7 +52,6 @@ export class FileService {
       let values = _.values(completed);
       let counts = _.countBy(values);
       if (onFileLoad) onFileLoad(counts["true"], values.length, result);
-      console.log(counts);
       if (counts["true"] === values.length) {
         this.fileStream.next(output);
         this.fileStream.complete();

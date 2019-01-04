@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef,EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { FileModalComponent } from '../file-modal/file-modal.component';
 import { Question } from '../common/Question';
 import { VerdictService } from '../verdict.service';
@@ -24,7 +24,7 @@ export class QuestionerComponent implements OnInit {
   }
 
   askNewQuestion() {
-    this.qs.AskNewQuestion().subscribe(() => { if (this.answer!=null) this.answer.focus() });
+    this.qs.AskNewQuestion().subscribe(() => { if (this.answer != null) this.answer.focus() });
   }
   submitAnswer($answer, $dismiss) {
     if (this.dismissedVerdict) {
@@ -34,11 +34,11 @@ export class QuestionerComponent implements OnInit {
       this.answer = $answer;
     } else {
       this.dismissedVerdict = true;
-      this.answer.value = "";
     }
+    this.answer.value = "";
   }
 
   saveQuestions() {
-    
+
   }
 }
