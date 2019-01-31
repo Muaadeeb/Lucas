@@ -19,7 +19,7 @@ export class ScoreService {
     let unprocessed = {
       "Correct Answers": { value: question.AnsweredCorrectly, scoreProcessor: scoresheet.Correct },
       "Incorrect Answers": { value: question.AnsweredIncorrectly, scoreProcessor: scoresheet.Incorrect },
-      "Minutes since last answered": { value: question.LastAsked == null ? 0 : (new Date().getMinutes() - question.LastAsked.getMinutes()), scoreProcessor: scoresheet.Timespan },
+      "Minutes since last answered": { value: question.LastAsked == null ? -1 : (new Date().getMinutes() - question.LastAsked.getMinutes()), scoreProcessor: scoresheet.Timespan },
       "Priority": { value: question.Priority, scoreProcessor: scoresheet.Priority }
     };
 
@@ -33,7 +33,7 @@ export class ScoreService {
   }
 
   private ProcessDatapoint(datum: number, processor: ScoreProcessor) {
-    return processor.Multiplier * datum ^ processor.Exponent;
+    return processor.Multiplier * datum ** processor.Exponent;
   }
 }
 

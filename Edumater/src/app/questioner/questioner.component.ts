@@ -16,6 +16,7 @@ export class QuestionerComponent implements OnInit {
   verdict: Verdict;
   dismissedVerdict: boolean = true;
   conceedFocusEventEmitter: EventEmitter<void> = new EventEmitter<void>();
+  randomColor: string;
   constructor(private verdictor: VerdictService,
     private qs: QuestionService) { }
 
@@ -25,7 +26,11 @@ export class QuestionerComponent implements OnInit {
 
   askNewQuestion() {
     this.qs.AskNewQuestion().subscribe(() => { if (this.answer != null) this.answer.focus() });
+    this.randomColor = this.generateRandomQuestion();
   }
+    generateRandomQuestion(): string {
+      return `hsl(${Math.floor(Math.random()*360)},70%,55%)`;
+    }
   submitAnswer($answer, $dismiss) {
     if (this.dismissedVerdict) {
       this.verdict = this.verdictor.MakeVerdict(this.qs.CurrentQuestion.PrimaryAnswer, this.qs.VerifyAnswer($answer.value));

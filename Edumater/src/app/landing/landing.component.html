@@ -1,11 +1,44 @@
 <app-file-modal #questionFileModal></app-file-modal>
-<div class="jumbotron">
-  <h1>Woot, welcome to the home page.</h1>
-  <small>(There's nothing here)</small>
-  <br />
-  <p>If you care to do something of value, check out the "Questioner" page, presently under construction, under this big gratifying  button.</p>
-  <a routerLink="/Questions/Ask" class="btn btn-success btn-large">Questioner</a>
 
+<div class="row">
+  <div id="land-head" class="col-12">
+    <h1 class="text-center">EDUMATER</h1>
+    <p>Welcome to the Edumater, a totally incredible learning tool by Lucas Niewohner</p>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/About">
+      <p>
+        <fa-icon icon="question" size="2x"></fa-icon>
+        <br />
+        How does it work?
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/Scoresheets">
+      <p>
+        <fa-icon icon="tools" size="2x"></fa-icon>
+        <br />
+        Manage Scoresheet
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/Questions">
+      <p>
+        <fa-icon icon="graduation-cap" size="2x"></fa-icon>
+        <br />
+        Manage Questions
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3 sm-prompt">
+    <div class="sm-prompt-inner" routerLink="/Questions/Ask">
+      <p>
+        <fa-icon icon="arrow-right" size="2x"></fa-icon>
+        <br />
+        Ask Away!
+      </p>
+    </div>
+  </div>
 </div>
-
-<button (click)="saveTest()" class="btn btn-large btn-success" style="z-index:10;">SAVE!!</button>

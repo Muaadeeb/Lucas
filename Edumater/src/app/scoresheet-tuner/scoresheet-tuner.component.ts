@@ -48,6 +48,9 @@ export class ScoresheetTunerComponent implements OnInit {
   }
 
   applyScoresheet() {
-    this.scoreService.CurrentScoresheet = _.clone(this.scoresheet);
+    if (this.scoresheetChanged) {
+      this.scoreService.CurrentScoresheet = _.clone(this.scoresheet);
+      this.scoresheetChanged = false;
+    }
   }
 }

@@ -3,21 +3,18 @@
     <div class="card">
       <div class="card-header">
         Current Scoresheet
-        <button class="float-right btn btn-sm btn-default" [class.disabled]="!scoresheetChanged" (click)="applyScoresheet()">Apply</button>
+        <button class="float-right btn btn-sm btn-light" [class.disabled]="!scoresheetChanged" (click)="applyScoresheet()">Apply</button>
       </div>
       <div class="card-body">
         <app-scoresheet-editor [scoresheet]="scoresheet" (change)="onScoresheetChange()"></app-scoresheet-editor>
       </div>
-    </div>
-    <div class="card-footer">
-
     </div>
   </div>
   <div class="col-lg-6">
     <div class="card mt-3 mt-lg-0">
       <div class="card-header">
         Scoresheet-Tester-O-Matic
-        <button class="btn btn-sm float-right" [ngClass]="testQuestion?'btn-default':'btn-success'" (click)="select()">Select {{testQuestion?"New ":""}}Question</button>
+        <button class="btn btn-sm float-right" [ngClass]="testQuestion?'btn-light':'btn-success'" (click)="select()">Select {{testQuestion?"New ":""}}Question</button>
       </div>
       <div class="card-body" *ngIf="testQuestion">
         <table class="table">
@@ -45,4 +42,13 @@
       </div>
     </div>
   </div>
-</div>
+    <div class="col-12 sm-prompt">
+      <div class="sm-prompt-inner" routerLink="../">
+        <p>
+          <fa-icon icon="arrow-left" size="2x"></fa-icon>
+          <br />
+          Scoresheet Manager
+        </p>
+      </div>
+    </div>
+  </div>

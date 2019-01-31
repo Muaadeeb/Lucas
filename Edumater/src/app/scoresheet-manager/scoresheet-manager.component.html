@@ -1,3 +1,40 @@
+<ng-template #scoresheetModal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title" [ngSwitch]="currentOperation">
+      <span *ngSwitchCase="ScoresheetOperation.Save">Save Scoresheet</span>
+      <span *ngSwitchCase="ScoresheetOperation.Load">Load Scoresheet</span>
+      <span *ngSwitchDefault>Unknown Operation</span>
+    </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Exit click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <ng-container [ngSwitch]="currentOperation">
+          <ng-container *ngSwitchCase="ScoresheetOperation.Save">
+            <label for="scoresheetInput">Save File Name</label>
+            <input [(ngModel)]="saveFilename" (keyup.enter)="scoresheetModalSubmit()" name="scoresheetInput" id="scoresheetInput" class="form-control" type="text">
+          </ng-container>
+          <ng-container *ngSwitchCase="ScoresheetOperation.Load">
+            <label for="scoresheetInput">Open ".scoresheet.json" File</label>
+            <input id="scoresheetInput" class="form-control-file" type="file">
+          </ng-container>
+          <h3 *ngSwitchDefault class="text-danger">Unknown Operation</h3>
+        </ng-container>
+        <small class="text-danger form-text">{{errorText}}</small>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-dark" (click)="scoresheetModalSubmit()" [ngSwitch]="currentOperation">
+      <span *ngSwitchCase="ScoresheetOperation.Save">Save</span>
+      <span *ngSwitchCase="ScoresheetOperation.Load">Load</span>
+      <span *ngSwitchDefault>Unknown Operation</span>
+    </button>
+  </div>
+</ng-template>
 
 <div class="row">
   <div class="col-12 p-4" id="sm-preview">
@@ -5,18 +42,18 @@
     <app-scoresheet-editor [scoresheet]="scoreService.CurrentScoresheet"></app-scoresheet-editor>
   </div>
   <div class="col-md-3 sm-prompt">
-    <div class="sm-prompt-inner">
+    <div class="sm-prompt-inner" (click)="loadScoresheet(scoresheetModal)">
       <p>
-        <i class="fa fa-upload"></i>
+        <fa-icon icon="upload" size="2x"></fa-icon>
         <br />
         Load
       </p>
     </div>
   </div>
   <div class="col-md-3 sm-prompt">
-    <div class="sm-prompt-inner">
+    <div class="sm-prompt-inner" (click)="saveScoresheet(scoresheetModal)">
       <p>
-        <i class="fa fa-download"></i>
+        <fa-icon icon="download" size="2x"></fa-icon>
         <br />
         Save
       </p>
@@ -25,7 +62,7 @@
   <div class="col-md-3 sm-prompt">
     <div class="sm-prompt-inner" routerLink="/Scoresheets/Tune">
       <p>
-        <i class="fa fa-flask"></i>
+        <fa-icon icon="flask" size="2x"></fa-icon>
         <br />
         Tune
       </p>
@@ -34,7 +71,7 @@
   <div class="col-md-3 sm-prompt">
     <div class="sm-prompt-inner" routerLink="/Questions/Ask">
       <p>
-        <i class="fa fa-arrow-right"></i>
+        <fa-icon icon="arrow-right" size="2x"></fa-icon>
         <br />
         Questioner
       </p>

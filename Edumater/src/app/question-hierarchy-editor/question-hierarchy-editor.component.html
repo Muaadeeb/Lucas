@@ -3,9 +3,12 @@
   <div class="modal-dialogue modal-lg">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">{{modalQuestionNode.Name || "(name)"}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="c('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <div class="modal-body">
-      <app-question-set-editor [questions]="modalQuestionNode.Questions" (questionAdded)="questionChange.emit()"></app-question-set-editor>
+      <app-question-set-editor [questions]="modalQuestionNode.Questions" (questionChange)="questionChange.emit()"></app-question-set-editor>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
@@ -19,24 +22,26 @@
     <ng-container *ngTemplateOutlet="Title"></ng-container>
   </mat-checkbox>
   <ng-template #Title>
-    <input *ngIf="questionNode.EditName; else nameDisplay" type="text" class="col-xs-12" [(ngModel)]="questionNode.Name" (keyup.enter)="uneditName()" (blur)="uneditName()" (keyup)="checkCharacter($event)" [@BadCharacter]="badCharacter"/>
-    <ng-template #nameDisplay>
+    <ng-container *ngIf="!questionNode.EditName">
       {{questionNode.Name || "(name)"}}
-      <i class="fa fa-pencil editNameButton" aria-hidden="true" (click)="nameEdit()"></i>
-    </ng-template>
+      <fa-icon icon="pen-square" size="lg" class="editNameButton" (click)="nameEdit()"></fa-icon>
+    </ng-container>
     <small class="text-danger" *ngIf="badCharacter">Node names cannot include '.' or '/'</small>
   </ng-template>
+  <input *ngIf="questionNode.EditName" type="text" class="col-xs-12 " [(ngModel)]="questionNode.Name" (keyup.enter)="uneditName()" (blur)="uneditName()" (keyup)="checkCharacter($event)" [@BadCharacter]="badCharacter" />
+
+
   <!-- (Here ends the mumbo jumo.  Well, at least, this particular mumbo jumbo) -->
 
 
   <div class="float-right col-xs-12">
-    <button class="btn btn-sm qn-btn" (click)="addChild()">Add Child</button>
+    <button class="btn btn-sm qn-btn qbtn-default" (click)="addChild()">Add Child</button>
     <button class="btn btn-sm qn-btn" [ngClass]="questionNode.Expanded?'btn-secondary':'btn-outline-secondary'" (click)="expandChildren()" *ngIf="(questionNode.Children!=null)&&(questionNode.Children.length>0)&&isChild">{{questionNode.Children.length}} Children</button>
 
 
     <ng-container *ngIf="questionMode">
       <button class="btn btn-sm btn-secondary qn-btn" (click)="viewQuestions()" *ngIf="questionNode.Questions&&questionNode.Questions.length>0; else addQuestionTemplate">{{questionNode.Questions.length}} Questions</button>
-      <ng-template #addQuestionTemplate><button class="btn btn-sm qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
+      <ng-template #addQuestionTemplate><button class="btn btn-sm qbtn-default qn-btn" (click)="addQuestion()">Add Question</button></ng-template>
     </ng-container>
     <button class="btn btn-sm btn-dark qn-btn" (click)="remove()" *ngIf="isChild">Remove</button>
   </div>

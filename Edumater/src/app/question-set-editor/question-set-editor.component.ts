@@ -10,6 +10,7 @@ export class QuestionSetEditorComponent implements OnInit {
   @Input() questions: Question[];
 
   @Output() questionChange = new EventEmitter<Question>();
+  
   constructor() { }
 
   ngOnInit() {

@@ -3,12 +3,12 @@
     <div class="input-group-prepend">
       <div class="input-group-text">Multiplier</div>
     </div>
-    <input [(ngModel)]="scoreProcessor.Multiplier" (change)="onChange()" type="number" class="form-control" id="MultiplierInput" placeholder="e.g. 10 (for 10x)">
+    <input [(ngModel)]="scoreProcessor.Multiplier" (change)="onChange()" type="number" step="any" class="form-control" id="MultiplierInput" placeholder="e.g. 10 (for 10x)">
   </div>
   <div class="input-group mb-2 mr-sm-2">
     <div class="input-group-prepend">
       <div class="input-group-text">Exponent</div>
     </div>
-    <input [(ngModel)]="scoreProcessor.Exponent" (change)="onChange()"  type="number" class="form-control" id="ExponentInput" placeholder="e.g. 2 (for 2nd power)">
+    <input [(ngModel)]="scoreProcessor.Exponent" (change)="onChange()"  type="number" step="any" class="form-control" id="ExponentInput" placeholder="e.g. 2 (for 2nd power)">
   </div>
 </div>

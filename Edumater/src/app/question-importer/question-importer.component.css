@@ -1,0 +1,16 @@
+.qi-option {
+  cursor: pointer;
+  padding: 1rem;
+}
+
+.qi-option-text {
+  margin: 0;
+  padding: 2rem;
+  background-color: white;
+  border: 3px solid grey;
+  border-radius: 5px;
+}
+
+  .qi-option-text:hover {
+    background-color:#DDDDDD;
+  }

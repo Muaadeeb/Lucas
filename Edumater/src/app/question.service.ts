@@ -90,6 +90,7 @@ export class QuestionService {
   public AskNewQuestion(): Observable<Question> {
     return this.GetNextQuestion().pipe(tap((question) => {
       this.CurrentQuestion = question;
+      this.CurrentQuestion.LastAsked = new Date();
     }, (error) => this.onError(error)));
   }
   onError: (error) => void = (error) => { throw error };
@@ -113,6 +114,7 @@ export class QuestionService {
             Answer.toLowerCase()));
     }
     if (correct) { this.CurrentQuestion.AnsweredCorrectly++; } else { this.CurrentQuestion.AnsweredIncorrectly++; }
+
     let currentIndex = this.ActiveQuestions.findIndex((value, index, obj) => {
       return value == this.CurrentQuestion;
     });

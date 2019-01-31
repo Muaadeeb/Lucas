@@ -1,0 +1,13 @@
+#author-box {
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.2);
+  border: 2px rgba(0,0,0,.4) solid;
+  padding: 1rem;
+  background-color: white;
+}
+#author-box-box {
+  background-image: repeating-linear-gradient(135deg, #4B0082 0px, #0000FF 50px, #00FF00 100px, #FFFF00 150px, #FF7F00 200px, #FF0000 250px);
+  background-size: 98%;
+  padding: 10px;
+  background-repeat: repeat;
+  margin-bottom: 2rem;
+}

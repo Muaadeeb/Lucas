@@ -31,3 +31,39 @@
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
   filter: alpha(opacity=20);
 }
+
+
+.sm-prompt {
+  padding: 15px;
+}
+
+.sm-prompt-inner {
+  background-color: rgba(255,255,255,.85);
+  background-clip: padding-box;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: .25rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.2);
+  border-radius: 7.5px;
+  height: 5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  padding:50px;
+}
+
+  .sm-prompt-inner:hover {
+    background-color: lightgray !important;
+  }
+
+
+  .sm-prompt-inner > p {
+    top: 50%; /*centered*/
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    position: absolute;
+  }
+
+    .sm-prompt-inner > p > i {
+      font-size: 2rem;
+    }

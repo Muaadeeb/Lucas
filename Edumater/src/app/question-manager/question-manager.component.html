@@ -1,6 +1,5 @@
 <app-file-modal #fileModal></app-file-modal>
 
-
 <div class="card">
   <div class="card-header">
     <h3 class="lead float-left">
@@ -16,21 +15,36 @@
     </div>
     <app-question-hierarchy-editor [questionNode]="qs.RootNode" (questionChange)="hierarchyQuestionAdded()" (selectChange)="selectionChanged()" selectMode="true" questionMode="true" fullySelectable="false"></app-question-hierarchy-editor>
   </div>
-
-  <div class="card-footer">
-    <button class="btn btn-large col-xs-12 col-sm-6 btn-dark" (click)="uploadClick()">Upload File</button>
-    <button class="btn btn-large col-xs-12 col-sm-6 qbtn-add" (click)="addNodeClick()">Add Node</button>
-  </div>
 </div>
 <br />
-<div *ngIf="continueUrl!=null" class="card text-white" [ngClass]="qs.QuestionsLoaded()? 'border-dark' : 'bg-danger'">
-  <div class="card-header">
-    <div>
-      <a class="btn float-right" [ngClass]="qs.QuestionsLoaded()?'btn-success':'btn-secondary disabled'" (click)="continueClick()">Continue</a>
-      <small *ngIf="!qs.QuestionsLoaded(); else questionsLoaded" class="card-text">Please open or create at least one question before continuing</small>
-      <ng-template #questionsLoaded>
-        <i class="lead card-text text-dark">{{continueUrl}}</i>
-      </ng-template>
+<div class="row">
+  <div class="sm-prompt" [ngClass]="continueUrl==null ? 'col-md-6' : 'col-md-4'">
+    <div class="sm-prompt-inner" routerLink="/Questions" (click)="uploadClick()">
+      <p>
+        <fa-icon icon="upload" size="2x"></fa-icon>
+        <br />
+        Upload Questions
+      </p>
+    </div>
+  </div>
+  <div class="sm-prompt" [ngClass]="continueUrl==null ? 'col-md-6' : 'col-md-4'">
+    <div class="sm-prompt-inner" routerLink="/Questions">
+      <p>
+        <fa-icon icon="file-import" size="2x"></fa-icon>
+        <br />
+        Import Questions
+    </div>
+  </div>
+  <div *ngIf="continueUrl!=null" class="sm-prompt col-md-4">
+    <div class="sm-prompt-inner"  [ngClass]="qs.QuestionsLoaded()? 'bg-light' : 'bg-danger'" (click)="continueClick()">
+      <p>
+        <fa-icon icon="arrow-right" size="2x"></fa-icon>
+        <br />
+        Continue
+        <br />
+        <small><i *ngIf="qs.QuestionsLoaded()" class="text-muted">{{continueUrl}}</i></small>
+      </p>
     </div>
   </div>
 </div>
+

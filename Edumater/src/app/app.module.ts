@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { DragulaModule } from 'ng2-dragula';
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core"
+import { faQuestion, faArrowRight, faArrowLeft, faFlask, faGraduationCap, faUpload, faDownload, faPenSquare, faTools, faFileImport } from "@fortawesome/free-solid-svg-icons";
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
@@ -21,6 +24,13 @@ import { ScoresheetTunerComponent } from './scoresheet-tuner/scoresheet-tuner.co
 import { QuestionSelectorModalComponent } from './question-selector-modal/question-selector-modal.component';
 import { ScoreprocessorEditorComponent } from './scoreprocessor-editor/scoreprocessor-editor.component';
 import { ScoresheetManagerComponent } from './scoresheet-manager/scoresheet-manager.component';
+import { AboutComponent } from './about/about.component';
+import { QuestionImporterComponent } from './question-importer/question-importer.component';
+import { TextImporterComponent } from './question-importer/text-importer/text-importer.component';
+
+library.add(
+  faQuestion, faArrowRight, faArrowLeft, faFlask, faGraduationCap, faUpload, faDownload, faPenSquare, faTools, faFileImport
+)
 
 @NgModule({
   imports: [
@@ -30,7 +40,8 @@ import { ScoresheetManagerComponent } from './scoresheet-manager/scoresheet-mana
     BrowserAnimationsModule,
     MatCheckboxModule,
     AppRoutingModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    FontAwesomeModule
   ],
   declarations: [
     AppComponent,
@@ -46,10 +57,14 @@ import { ScoresheetManagerComponent } from './scoresheet-manager/scoresheet-mana
     ScoresheetTunerComponent,
     QuestionSelectorModalComponent,
     ScoreprocessorEditorComponent,
-    ScoresheetManagerComponent
+    ScoresheetManagerComponent,
+    AboutComponent,
+    QuestionImporterComponent,
+    TextImporterComponent
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [QuestionSelectorModalComponent]
+  entryComponents: [QuestionSelectorModalComponent,
+    TextImporterComponent]
 })
 export class AppModule { }
